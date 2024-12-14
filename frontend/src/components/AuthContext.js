@@ -91,12 +91,28 @@ export const AuthProvider = ({ children }) => {
         setLoading(false); 
       });
   };
+
+  const logout = async () => {
+    
+    try {
+        await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+
+        Cookies.remove('auth_token');
+        Cookies.remove('username');
+
+        setUser(null);
+
+        navigate('/login');
+    } catch (error) {
+        console.error('Error during logout:', error);
+    }
+};
   
   if (loading) {
     return <div>Loading...</div>; 
   }
   return (
-    <AuthContext.Provider value={{ user, login, register}}>
+    <AuthContext.Provider value={{ user, login, register, logout}}>
       {children}
     </AuthContext.Provider>
   );
