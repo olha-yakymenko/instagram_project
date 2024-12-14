@@ -2,18 +2,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
+import { TextField, Button, Typography } from '@mui/material';
+import '../components/CSS/Login.css';
 
 const Login = () => {
-  const [username, setUsername] = useState('');  
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       login(username, password);
+      navigate('/'); 
     } catch (error) {
       console.error('Login failed:', error.response?.data?.error || error.message);
     }
@@ -24,31 +26,61 @@ const Login = () => {
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="username">Username:</label>
-          <input
+          <TextField
+            label="Username"
             type="text"
-            id="username"
-            placeholder="Enter your username"
+            fullWidth
             value={username}
-            onChange={(e) => setUsername(e.target.value)}  // Zmieniamy email na username
+            onChange={(e) => setUsername(e.target.value)}
             required
+            sx={{
+              marginBottom: 2,  
+              '& .MuiInputBase-root': {
+                borderRadius: '8px', 
+                borderColor: '#ddd', 
+              },
+            }}
           />
         </div>
         <div className="form-group">
-          <label htmlFor="password">Password:</label>
-          <input
+          <TextField
+            label="Password"
             type="password"
-            id="password"
-            placeholder="Enter your password"
+            fullWidth
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            sx={{
+              marginBottom: 2,
+              '& .MuiInputBase-root': {
+                borderRadius: '8px',
+                borderColor: '#ddd',
+              },
+            }}
           />
         </div>
-        <button type="submit">Login</button>
+        <Button
+          type="submit"
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{
+            padding: '12px',
+            backgroundColor: '#3f51b5',
+            '&:hover': {
+              backgroundColor: '#303f9f', 
+            },
+          }}
+        >
+          Login
+        </Button>
       </form>
+      <Typography sx={{ marginTop: 2 }}>
+        Don't have an account? <a href="/register">Register here</a>
+      </Typography>
     </div>
   );
 };
 
 export default Login;
+
