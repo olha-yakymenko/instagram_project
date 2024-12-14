@@ -68,12 +68,35 @@ export const AuthProvider = ({ children }) => {
         setLoading(false); 
       });
   };
+  const register = (username, email, password) => {
+    setLoading(true);
+    axios
+      .post('http://localhost:5000/api/auth/register', { username, email, password }, { withCredentials: true })
+      .then((response) => {
+        const token = response.data.token;
+        Cookies.set('auth_token', token, { expires: 7 }); 
+        Cookies.set('username', username, { expires: 7 }); 
+        console.log('Registration successful:', response.data);
+
+        return checkUser(token, username);
+      })
+      .then((response) => {
+        setUser(response.data); 
+        navigate('/login'); 
+      })
+      .catch((error) => {
+        console.error('Registration failed:', error); 
+      })
+      .finally(() => {
+        setLoading(false); 
+      });
+  };
   
   if (loading) {
     return <div>Loading...</div>; 
   }
   return (
-    <AuthContext.Provider value={{ user, login}}>
+    <AuthContext.Provider value={{ user, login, register}}>
       {children}
     </AuthContext.Provider>
   );
