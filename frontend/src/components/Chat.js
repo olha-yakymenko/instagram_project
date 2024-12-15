@@ -27,6 +27,8 @@ const Chat = () => {
         setUserId(user.id);
       });
 
+    newSocket.emit('joinRoom', { roomId });
+
 }, [roomId]);
 
 };
