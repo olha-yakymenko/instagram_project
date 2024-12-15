@@ -47,3 +47,32 @@ router.get('/search-user/:username', authenticate, async (req, res) => {
         res.status(500).json({ error: 'Server error during user search' });
     }
 });
+
+router.post('/start-chat', authenticate, async (req, res) => {
+    const { recipientId } = req.body;
+
+    try {
+        const recipient = await User.findByPk(recipientId);
+        if (!recipient) {
+            return res.status(404).json({ error: 'Recipient not found' });
+        }
+
+        const [room] = await Room.findOrCreate({
+            where: {
+                [Op.or]: [
+                    { user1Id: req.user.id, user2Id: recipientId },
+                    { user1Id: recipientId, user2Id: req.user.id },
+                ],
+            },
+            defaults: {
+                user1Id: req.user.id,
+                user2Id: recipientId,
+            },
+        });
+
+        res.json({ roomId: room.id, message: 'Chat started successfully' });
+    } catch (err) {
+        console.error('Error during chat start:', err);
+        res.status(500).json({ error: 'Server error during chat start' });
+    }
+});
