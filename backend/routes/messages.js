@@ -76,3 +76,48 @@ router.post('/start-chat', authenticate, async (req, res) => {
         res.status(500).json({ error: 'Server error during chat start' });
     }
 });
+
+router.get('/rooms', authenticate, async (req, res) => {
+    try {
+        const loggedInUserId = req.user.id; 
+
+        console.log('Fetching chat rooms for user:', loggedInUserId);
+
+        const rooms = await Room.findAll({
+            include: [
+                {
+                    model: User,
+                    as: 'User1',
+                    attributes: ['id', 'username'],
+                },
+                {
+                    model: User,
+                    as: 'User2',
+                    attributes: ['id', 'username'],
+                },
+            ],
+            where: {
+                [Op.or]: [
+                    { user1Id: loggedInUserId }, 
+                    { user2Id: loggedInUserId }, 
+                ],
+            },
+        });
+
+        if (!rooms || rooms.length === 0) {
+            return res.status(404).json({ error: 'No chat rooms found for the user' });
+        }
+
+        const formattedRooms = rooms.map(room => ({
+            id: room.id,
+            user1: room.User1 ? room.User1.username : 'Nieznany użytkownik',
+            user2: room.User2 ? room.User2.username : 'Nieznany użytkownik',
+        }));
+
+        console.log('Chat rooms for user:', formattedRooms);
+        res.json(formattedRooms);
+    } catch (err) {
+        console.error('Error while fetching chat rooms for user:', err);
+        res.status(500).json({ error: 'Error while fetching chat rooms' });
+    }
+});
