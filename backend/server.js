@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const socketIo = require('socket.io');
 const http = require('http');
 const app = express();
+const cookieParser = require('cookie-parser');
 const { router: messageRoutes, socketSetup } = require('./routes/messages');
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -33,9 +34,10 @@ app.use(
   
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
-
+app.use('/api/message', messageRoutes)
 
 require('dotenv').config(); 
 

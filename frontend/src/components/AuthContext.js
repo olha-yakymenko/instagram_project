@@ -77,7 +77,6 @@ export const AuthProvider = ({ children }) => {
         Cookies.set('auth_token', token, { expires: 7 }); 
         Cookies.set('username', username, { expires: 7 }); 
         console.log('Registration successful:', response.data);
-
         return checkUser(token, username);
       })
       .then((response) => {

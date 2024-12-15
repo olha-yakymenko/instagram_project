@@ -7,7 +7,9 @@ const User = require('../models/user');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
+
 const authenticate = (req, res, next) => {
+    console.log("Cookies", req.cookies)
     const token = req.cookies.token; 
     if (!token) {
         return res.status(401).json({ error: 'No token' });
