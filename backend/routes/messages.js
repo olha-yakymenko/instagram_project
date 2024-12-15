@@ -240,6 +240,9 @@ function socketSetup(io) {
             }
         });
         
+        socket.on('disconnect', () => {
+            console.log('User disconnected from WebSocket', socket.id);
+        });
     });
 }
 
