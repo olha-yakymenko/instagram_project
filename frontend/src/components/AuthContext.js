@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import axios from '../services/api';
 import Cookies from 'js-cookie'; 
 import { useNavigate } from 'react-router-dom';
 const AuthContext = createContext();
@@ -15,14 +15,14 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
 
   const checkUser = (auth_token, username) => {
-    return axios.get(`http://localhost:5007/api/auth/user/${username}`, {
+    return axios.get(`/auth/user/${username}`, {
       headers: { Authorization: `Bearer ${auth_token}` },
       withCredentials: true, 
     });
   };
 
   useEffect(() => {
-    const token = Cookies.get('token'); 
+    const token = Cookies.get('auth_token'); 
     const username = Cookies.get('username'); 
     if (token && username) {
       checkUser(token, username)
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   const login = (username, password) => {
     setLoading(true);
     axios
-      .post('http://localhost:5000/api/auth/login', { username, password }, { withCredentials: true })
+      .post('/auth/login', { username, password }, { withCredentials: true })
       .then((response) => {
         const token = response.data.token;
         console.log('Token otrzymany z serwera:', token); 
@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   const register = (username, email, password) => {
     setLoading(true);
     axios
-      .post('http://localhost:5000/api/auth/register', { username, email, password }, { withCredentials: true })
+      .post('/auth/register', { username, email, password }, { withCredentials: true })
       .then((response) => {
         const token = response.data.token;
         Cookies.set('auth_token', token, { expires: 7 }); 
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     
     try {
-        await axios.post('http://localhost:5000/api/auth/logout', {}, { withCredentials: true });
+        await axios.post('/auth/logout', {}, { withCredentials: true });
 
         Cookies.remove('auth_token');
         Cookies.remove('username');
