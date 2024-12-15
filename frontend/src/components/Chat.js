@@ -8,6 +8,7 @@ import Cookies from 'js-cookie';
 const Chat = () => {
   const { roomId } = useParams(); 
   const [socket, setSocket] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const userToken = Cookies.get('auth_token'); 
@@ -16,11 +17,15 @@ const Chat = () => {
       return;
     }
 
-    const newSocket = io('http://localhost:5000', {
+    const newSocket = io('http://localhost:5007', {
       auth: { token: userToken },
     });
 
     setSocket(newSocket);
+
+    newSocket.on('userInfo', (user) => {
+        setUserId(user.id);
+      });
 
 }, [roomId]);
 
