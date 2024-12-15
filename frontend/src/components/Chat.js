@@ -9,6 +9,7 @@ const Chat = () => {
   const { roomId } = useParams(); 
   const [socket, setSocket] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [roomInfo, setRoomInfo] = useState({ user1: '', user2: '' });
 
   useEffect(() => {
     const userToken = Cookies.get('auth_token'); 
@@ -28,6 +29,12 @@ const Chat = () => {
       });
 
     newSocket.emit('joinRoom', { roomId });
+
+    newSocket.on('roomInfo', (info) => {
+        if (info) {
+          setRoomInfo(info);
+        }
+      });
 
 }, [roomId]);
 
