@@ -144,6 +144,60 @@ function socketSetup(io) {
             socket.disconnect(); 
             return;
         }
+
+        socket.on('joinRoom', async ({ roomId }) => {
+            if (!roomId) {
+                console.log('Error: Missing roomId');
+                return;
+            }
+        
+            socket.join(roomId);
+            console.log(`User ${socket.id} joined room ${roomId}`);
+        
+            try {
+                const room = await Room.findOne({
+                    where: { id: roomId },
+                    include: [
+                        { model: User, as: 'User1', attributes: ['id', 'username'] },
+                        { model: User, as: 'User2', attributes: ['id', 'username'] },
+                    ],
+                });
+        
+                if (room) {
+                    const roomInfo = {
+                        user1: room.User1?.username || 'Nieznany użytkownik',
+                        user2: room.User2?.username || 'Nieznany użytkownik',
+                    };
+                    socket.emit('roomInfo', roomInfo);
+                } else {
+                    console.log('Room not found for roomId:', roomId);
+                }
+        
+                const messages = await Message.findAll({
+                    where: { roomId },
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['id', 'username'], 
+                        },
+                    ],
+                    order: [['timestamp', 'ASC']], 
+                });
+        
+                const formattedMessages = messages.map(message => ({
+                    id: message.id,
+                    content: message.content,
+                    timestamp: message.timestamp,
+                    roomId: message.roomId,
+                    senderUsername: message.User?.username || 'Nieznany użytkownik',
+                }));
+        
+                socket.emit('loadMessages', formattedMessages); 
+            } catch (err) {
+                console.error('Error fetching room info or messages:', err);
+            }
+        });
+        
     });
 }
 
