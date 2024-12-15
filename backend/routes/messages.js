@@ -198,6 +198,48 @@ function socketSetup(io) {
             }
         });
         
+        socket.on('sendMessage', async (messageData) => {
+            console.log('Received messageData:', messageData);
+        
+            if (!messageData.roomId || !messageData.content) {
+                console.log('Error: Missing roomId or content');
+                return;
+            }
+        
+            try {
+                const sender = await User.findOne({
+                    where: { id: socket.user.id },
+                    attributes: ['id', 'username'],
+                });
+        
+                if (!sender) {
+                    console.log('Error: Sender not found');
+                    return;
+                }
+        
+                const message = await Message.create({
+                    roomId: messageData.roomId,
+                    content: messageData.content,
+                    userId: sender.id,
+                    timestamp: new Date(),
+                });
+        
+                console.log('Message created:', message);
+        
+                const newMessage = {
+                    id: message.id,
+                    content: message.content,
+                    timestamp: message.timestamp,
+                    roomId: message.roomId,
+                    senderUsername: sender.username, 
+                };
+        
+                io.to(messageData.roomId).emit('newMessage', newMessage);
+            } catch (err) {
+                console.error('Error sending message via WebSocket:', err);
+            }
+        });
+        
     });
 }
 
