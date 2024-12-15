@@ -11,7 +11,8 @@ const Chat = () => {
   const [userId, setUserId] = useState(null);
   const [roomInfo, setRoomInfo] = useState({ user1: '', user2: '' });
   const [messages, setMessages] = useState([]);
-  
+  const [newMessage, setNewMessage] = useState('');
+
   useEffect(() => {
     const userToken = Cookies.get('auth_token'); 
     if (!userToken) {
@@ -40,6 +41,11 @@ const Chat = () => {
     newSocket.on('loadMessages', (loadedMessages) => {
         setMessages(loadedMessages);
     });
+
+    newSocket.on('newMessage', (message) => {
+        setMessages((prevMessages) => [...prevMessages, message]);
+      });
+  
 
 }, [roomId]);
 
