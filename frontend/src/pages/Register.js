@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import { TextField, Button, Typography } from '@mui/material';
-import '../components/CSS/Register.css';  
+
 
 const Register = () => {
   const [userData, setUserData] = useState({

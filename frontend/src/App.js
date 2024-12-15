@@ -1,11 +1,17 @@
 import React from 'react';
-import { BrowserRouter as Router} from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';  // Używaj Routes
 import { AuthProvider } from './components/AuthContext';
+import Login from './pages/Login';
+import Register from './pages/Register';
 
 const App = () => {
   return (
     <Router>
       <AuthProvider>
+        <Routes> 
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
       </AuthProvider>
     </Router>
   );
