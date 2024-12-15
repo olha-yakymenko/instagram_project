@@ -121,3 +121,33 @@ router.get('/rooms', authenticate, async (req, res) => {
         res.status(500).json({ error: 'Error while fetching chat rooms' });
     }
 });
+
+function socketSetup(io) {
+    io.on('connection', (socket) => {
+        console.log('User connected to WebSocket', socket.id);
+        console.log(socket.handshake)
+        const token = socket.handshake.auth.token;
+        console.log('Received token:', token);
+
+        if (!token) {
+            console.log('Authentication error: No token');
+            socket.disconnect(); 
+            return;
+        }
+
+        try {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+            socket.user = decoded; 
+            console.log('Authenticated user:', socket.user);
+        } catch (error) {
+            console.log('Authentication error:', error);
+            socket.disconnect(); 
+            return;
+        }
+    });
+}
+
+module.exports = {
+    router,
+    socketSetup,
+};
