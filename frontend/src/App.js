@@ -4,7 +4,7 @@ import { AuthProvider } from './components/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import RoomList from './components/RoomList';
-
+import Chat from './components/Chat'
 const App = () => {
   return (
     <Router>
@@ -13,6 +13,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/chat" element={<RoomList />} /> 
+          <Route path="/chat/:roomId" element={<Chat />} />
         </Routes>
       </AuthProvider>
     </Router>
