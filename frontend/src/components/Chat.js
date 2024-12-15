@@ -45,7 +45,10 @@ const Chat = () => {
     newSocket.on('newMessage', (message) => {
         setMessages((prevMessages) => [...prevMessages, message]);
       });
-  
+      
+    return () => {
+        if (newSocket) newSocket.disconnect();
+    };
 
 }, [roomId]);
 
