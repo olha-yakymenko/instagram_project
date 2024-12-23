@@ -167,3 +167,32 @@ router.delete('/:id', authenticate, async (req, res) => {
     }
 });
 
+router.get('/:username', async (req, res) => {
+    const { username } = req.params; 
+    try {
+        const user = await User.findOne({ where: { username } });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const posts = await Post.findAll({
+            where: { authorId: user.id },
+            include: {
+                model: User,
+                as: 'User',
+                attributes: ['id', 'username'], 
+            },
+        });
+
+        const postsWithImageUrls = posts.map(post => {
+            return {
+                ...post.dataValues,
+                image: `http://localhost:5000${post.image}`,  
+            };
+        });
+
+        res.json(postsWithImageUrls);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
