@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
-
+import './CSS/Chat.css'
 const Chat = () => {
   const { roomId } = useParams(); 
   const [socket, setSocket] = useState(null);

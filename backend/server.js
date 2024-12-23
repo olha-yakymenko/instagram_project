@@ -15,13 +15,13 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost:3002',
+    origin: 'http://localhost:3004',
     methods: ['GET', 'POST'],
     credentials: true,
   }
 });
 
-const allowedOrigins = ['http://localhost:3002']; 
+const allowedOrigins = ['http://localhost:3004']; 
 app.use(
   cors({
     origin: function (origin, callback) {
