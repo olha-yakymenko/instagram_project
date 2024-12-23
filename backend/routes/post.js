@@ -82,3 +82,26 @@ router.post('/', authenticate, upload.single('image'), async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+
+router.get('/', async (req, res) => {
+    try {
+        const posts = await Post.findAll({
+            include: {
+                model: User,
+                as: 'User',
+                attributes: ['id', 'username'],
+            },
+        });
+
+        const postsWithImageUrls = posts.map(post => {
+            return {
+                ...post.dataValues,
+                image: `http://localhost:5000${post.image}`,  // Tworzymy pełną ścieżkę URL
+            };
+        });
+
+        res.json(postsWithImageUrls);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
