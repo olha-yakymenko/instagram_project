@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaHome, FaSearch, FaRegPlusSquare, FaRegHeart, FaUserCircle } from 'react-icons/fa';
-import { useAuth } from './AuthContext'; 
+import { useAuth } from './AuthContext';  
 import './CSS/Navbar.css';
 
 const Navbar = () => {
