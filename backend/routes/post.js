@@ -60,3 +60,25 @@ const authenticate = (req, res, next) => {
   
   router.use('/uploads', express.static(uploadDir));
   
+  
+router.post('/', authenticate, upload.single('image'), async (req, res) => {
+    const { description } = req.body;
+    const file = req.file;
+
+    if (!file) {
+        return res.status(400).json({ error: 'Zdjęcie jest wymagane' });
+    }
+
+    try {
+        const imagePath = `/uploads/${file.filename}`;
+        
+        const post = await Post.create({
+            image: imagePath,  
+            description,
+            authorId: req.user.id,
+        });
+        res.status(201).json(post);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
