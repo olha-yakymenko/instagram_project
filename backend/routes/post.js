@@ -96,11 +96,31 @@ router.get('/', async (req, res) => {
         const postsWithImageUrls = posts.map(post => {
             return {
                 ...post.dataValues,
-                image: `http://localhost:5000${post.image}`,  // Tworzymy pełną ścieżkę URL
+                image: `http://localhost:5000${post.image}`, 
             };
         });
 
         res.json(postsWithImageUrls);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+
+router.put('/:id', authenticate, async (req, res) => {
+    const { id } = req.params;
+    const { description } = req.body;
+
+    try {
+        const post = await Post.findByPk(id);
+        if (!post || post.authorId !== req.user.id) {
+            return res.status(403).json({ error: 'Brak dostępu' });
+        }
+
+        post.description = description || post.description;
+        await post.save();
+
+        res.json(post);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
