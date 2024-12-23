@@ -2,7 +2,7 @@ const express = require('express');
 const Post = require('../models/post');
 const User = require('../models/user');
 const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser'); // Cookie Parser
+const cookieParser = require('cookie-parser');  
 const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
@@ -27,4 +27,36 @@ const authenticate = (req, res, next) => {
       return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
     }
   };
+  
+
+  const uploadDir = path.join(__dirname, '..', 'uploads');
+  if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir); 
+  }
+  
+  const storage = multer.diskStorage({
+      destination: function (req, file, cb) {
+          cb(null, 'uploads/'); 
+      },
+      filename: function (req, file, cb) {
+          const timestamp = Date.now();
+          const originalName = path.parse(file.originalname).name; 
+          const extension = path.extname(file.originalname); 
+          const newName = `${timestamp}-${originalName}${extension}`;
+          cb(null, newName);  
+      }
+  });
+  const upload = multer({
+      storage,
+      fileFilter: (req, file, cb) => {
+          const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+          if (allowedTypes.includes(file.mimetype)) {
+              cb(null, true);
+          } else {
+              cb(new Error('Nieprawidłowy typ pliku. Dozwolone są: JPEG, PNG, GIF.'));
+          }
+      },
+  });
+  
+  router.use('/uploads', express.static(uploadDir));
   
