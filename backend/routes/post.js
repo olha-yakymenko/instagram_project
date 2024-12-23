@@ -125,3 +125,45 @@ router.put('/:id', authenticate, async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+
+
+
+router.delete('/:id', authenticate, async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const post = await Post.findByPk(id);
+        if (!post || post.authorId !== req.user.id) {
+            return res.status(403).json({ error: 'Brak dostępu' });
+        }
+
+        const imagePath = Buffer.isBuffer(post.image)
+            ? post.image.toString('utf-8') 
+            : post.image;
+
+        console.log('Ścieżka obrazu:', imagePath);
+
+        if (typeof imagePath !== 'string') {
+            throw new Error('Niepoprawny format pola "image" w poście');
+        }
+
+        const imageRelativePath = imagePath.startsWith('/')
+            ? imagePath.slice(1) 
+            : imagePath;
+        const filePath = path.join(__dirname, '..', imageRelativePath);
+
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
+        await post.destroy();
+
+        mqttClient.publish('posts/deleted', JSON.stringify({ id }));
+
+        res.json({ message: 'Post usunięty' });
+    } catch (error) {
+        console.error('Błąd podczas usuwania posta:', error);
+        res.status(400).json({ error: error.message });
+    }
+});
+
