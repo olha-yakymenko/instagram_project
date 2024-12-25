@@ -212,3 +212,35 @@ router.get('/:postId/comments', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+
+router.get('/user/:userId/liked-posts', authenticate, async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const likes = await Like.findAll({
+            where: { userId },
+            include: [
+                {
+                    model: Post,
+                    include: [
+                        {
+                            model: User,
+                            attributes: ['username'],
+                        }
+                    ]
+                }
+            ]
+        });
+
+        if (!likes.length) {
+            return res.status(404).json({ error: 'Brak polubionych postow dla tego uzytkownika' });
+        }
+
+        const likedPosts = likes.map(like => like.Post);
+
+        res.json(likedPosts);
+    } catch (error) {
+        console.error('Blad podczas pobierania polubien:', error);
+        res.status(500).json({ error: 'Blad z polubieniami' });
+    }
+});
