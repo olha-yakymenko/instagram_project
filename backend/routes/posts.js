@@ -244,3 +244,13 @@ router.get('/user/:userId/liked-posts', authenticate, async (req, res) => {
         res.status(500).json({ error: 'Blad z polubieniami' });
     }
 });
+
+router.get('/:id/likes', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const likeCount = await Like.count({ where: { postId: id } });
+        res.json({ likes: likeCount });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
