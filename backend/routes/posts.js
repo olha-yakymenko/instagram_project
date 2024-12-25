@@ -96,7 +96,7 @@ router.get('/', async (req, res) => {
         const postsWithImageUrls = posts.map(post => {
             return {
                 ...post.dataValues,
-                image: `http://localhost:5000${post.image}`, 
+                image: `http://localhost:5007${post.image}`, 
             };
         });
 
@@ -187,11 +187,27 @@ router.get('/:username', async (req, res) => {
         const postsWithImageUrls = posts.map(post => {
             return {
                 ...post.dataValues,
-                image: `http://localhost:5000${post.image}`,  
+                image: `http://localhost:5007${post.image}`,  
             };
         });
 
         res.json(postsWithImageUrls);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+router.get('/:postId/comments', async (req, res) => {
+    const { postId } = req.params;
+    try {
+        const comments = await Comment.findAll({
+            where: { postId },
+            include: {
+                model: User,
+                attributes: ['username'],
+            },
+        });
+        res.json(comments);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
