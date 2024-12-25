@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { connectDB } = require('./models/index');
 const authRoutes = require('./routes/auth');
+const postRoutes = require('./routes/posts');
 const http = require('http');
 const socketIo = require('socket.io');
 require('dotenv').config();
@@ -10,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const { router: messageRoutes, socketSetup } = require('./routes/messages');
 
 const app = express();
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const server = http.createServer(app);
 
@@ -41,6 +43,7 @@ app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/message', messageRoutes); 
+app.use('/api/posts', postRoutes);
 
 connectDB();
 
