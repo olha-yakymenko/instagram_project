@@ -317,3 +317,86 @@ router.post('/:id/likes', authenticate, async (req, res) => {
     }
 });
 
+
+
+router.post('/:postId/comments', authenticate, async (req, res) => {
+    const { postId } = req.params;
+    const { content } = req.body;
+
+    try {
+        const post = await Post.findByPk(postId); 
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        const comment = await Comment.create({
+            content,
+            postId,
+            authorId: req.user.id,
+        });
+
+        const notificationPayloadForPostAuthor = {
+            userId: post.authorId, 
+            relatedUserId: req.user.id, 
+            postId: post.id,
+            type: 'comment',
+            content: `${req.user.username} dodał nowy komentarz: "${comment.content}"`,
+        };
+
+
+        mqttClient.publish(
+            `user/${post.authorId}/notifications`,  
+            JSON.stringify({
+                postId: postId,
+                type: 'comment',
+                contentText: `Twój post otrzymał nowy komentarz: "${comment.content}"`,
+            }),
+            (err) => {
+                if (err) {
+                    console.error('MQTT publish error for comment notification to post author:', err);
+                } else {
+                    console.log('Published comment notification to post author successfully');
+                }
+            }
+        );
+
+        await Notification.create(notificationPayloadForPostAuthor);
+
+
+        const notificationPayloadForCommenter = {
+            userId: req.user.id, 
+            relatedUserId: post.authorId, 
+            postId: post.id,
+            type: 'comment',
+            content: `Dodałeś nowy komentarz: "${comment.content}"`,
+        };
+
+
+        mqttClient.publish(
+            `user/${req.user.id}/notifications`,  
+            JSON.stringify({
+                postId: postId,
+                type: 'comment',
+                contentText: `Dodałeś nowy komentarz: "${comment.content}"`,
+            }),
+            (err) => {
+                if (err) {
+                    console.error('MQTT publish error for comment notification to user:', err);
+                } else {
+                    console.log('Published comment notification to user successfully', req.user.id);
+                }
+            }
+        );
+
+        await Notification.create(notificationPayloadForCommenter);
+
+
+        res.status(201).json(comment);
+    } catch (error) {
+        console.error('Error in /:postId/comments:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+module.exports = router;
