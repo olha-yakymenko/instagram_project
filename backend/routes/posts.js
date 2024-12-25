@@ -254,3 +254,66 @@ router.get('/:id/likes', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+
+
+router.post('/:id/likes', authenticate, async (req, res) => {
+    const { id } = req.params; 
+
+    try {
+        const post = await Post.findByPk(id);
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+        console.log("Postaaa:", post);
+
+        const [like, created] = await Like.findOrCreate({
+            where: { userId: req.user.id, postId: post.id },
+        });
+
+        const likeCount = await Like.count({ where: { postId: post.id } });
+
+        mqttClient.publish(
+            `posts/${post.id}/likes`,
+            JSON.stringify({ likes: likeCount }),
+            (err) => {
+                if (err) {
+                    console.error('MQTT publish error for likes:', err);
+                } else {
+                    console.log('Published like count successfully');
+                }
+            }
+        );
+
+        const notificationMessage = `${req.user.username} polubił twój post.`;
+
+        await Notification.create({
+            userId: post.authorId,        
+            relatedUserId: req.user.id,    
+            postId: post.id,               
+            type: 'like',                  
+            content: notificationMessage, 
+        });
+
+        mqttClient.publish(
+            `user/${post.authorId}/notifications`, 
+            JSON.stringify({
+                postId: post.id,
+                type: 'like',
+                contentText: notificationMessage,
+            }),
+            (err) => {
+                if (err) {
+                    console.error('MQTT publish error for like notification:', err);
+                } else {
+                    console.log('Published like notification successfully');
+                }
+            }
+        );
+
+        res.status(201).json({ likes: likeCount });
+    } catch (error) {
+        console.error('Error in /likes route:', error);
+        res.status(400).json({ error: error.message });
+    }
+});
+
