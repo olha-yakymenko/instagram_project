@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import Post from '../components/Post';
 import axios from '../services/api';
 import mqtt from 'mqtt';
-import '../components/CSS/Home.css'
 
 const Home = () => {
     const [posts, setPosts] = useState([]);
@@ -15,7 +14,7 @@ const Home = () => {
             sseConnection.close(); 
         }
 
-        const eventSource = new EventSource('http://localhost:5000/api/ads/ads-stream');
+        const eventSource = new EventSource('http://localhost:5007/api/ads/ads-stream');
 
         eventSource.onmessage = (event) => {
             const ad = JSON.parse(event.data);

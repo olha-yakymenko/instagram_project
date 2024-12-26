@@ -156,7 +156,7 @@ const Post = ({ post }) => {
         <i 
           className={`fa${userHasLiked ? 's' : 'r'} fa-heart like-button`} 
           onClick={handleLike}
-          style={{ color: userHasLiked ? 'red' : 'black', transition: 'color 0.3s ease' }}
+          style={{ color: userHasLiked ? 'red' : 'black', transition: 'color 0.3s ease'}}
         ></i>
         <p>{likes} Likes</p>
 

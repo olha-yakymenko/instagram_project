@@ -1,7 +1,11 @@
 const express = require('express');
 const Post = require('../models/post');
 const User = require('../models/user');
+const Comment = require('../models/comment');
+const Like = require('../models/like');
+const Notification = require('../models/notification')
 const jwt = require('jsonwebtoken');
+const mqtt = require('mqtt'); 
 const cookieParser = require('cookie-parser');  
 const path = require('path');
 const fs = require('fs');
@@ -10,6 +14,10 @@ const multer = require('multer');
 const router = express.Router();
 router.use(cookieParser()); 
 
+const mqttClient = mqtt.connect('mqtt://localhost:1883');
+mqttClient.on('connect', () => {
+    console.log('MQTT client connected');
+});
 const authenticate = (req, res, next) => {
     const token = req.cookies && req.cookies.token; 
   
@@ -398,5 +406,26 @@ router.post('/:postId/comments', authenticate, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+router.delete('/:postId/likes', authenticate, async (req, res) => {
+    const { postId } = req.params;
+    try {
+        const like = await Like.findOne({ where: { userId: req.user.id, postId } });
+
+        if (!like) {
+            return res.status(404).json({ error: 'Like not found' });
+        }
+
+        await like.destroy();
+
+        const likeCount = await Like.count({ where: { postId } });
+        mqttClient.publish(`posts/${postId}/likes`, JSON.stringify({ likes: likeCount }));
+
+        res.status(200).json({ likes: likeCount });
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while removing the like' });
+    }
+});
+
 
 module.exports = router;

@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import {useAuth} from './AuthContext'
@@ -32,7 +30,7 @@ const CommentSection = ({ postId, comments, currentUser, mqttClient }) => {
       <div className="comments-list">
   {localComments.map((comment, index) => (
     <div key={comment?.id || index} className="comment">
-      <p>{comment?.content || ' '}</p> {/* Jeśli content jest undefined, wyświetl "No content available" */}
+      <p>{comment?.content || ' '}</p> 
     </div>
   ))}
 </div>
