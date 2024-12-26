@@ -1,0 +1,5 @@
+[
+    { "id": 1, "imageUrl": "/ad1.jpg", "link": "https://example.com/ad1" },
+    { "id": 2, "imageUrl": "/ad2.jpg", "link": "https://example.com/ad2" },
+    { "id": 3, "imageUrl": "/ad3.jpg", "link": "https://example.com/ad3" }
+]
