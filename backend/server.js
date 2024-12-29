@@ -5,6 +5,7 @@ const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const searchRoutes = require('./routes/search');
 const adsRoutes=require('./routes/ads')
+const notificationRoutes = require('./routes/notifications');
 const http = require('http');
 const path = require('path');
 const socketIo = require('socket.io');
@@ -50,6 +51,8 @@ app.use('/api/message', messageRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/ads', adsRoutes)
 app.use('/api/search', searchRoutes);
+app.use('/api/notifications', notificationRoutes);
+
 
 connectDB();
 
