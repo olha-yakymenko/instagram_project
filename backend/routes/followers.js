@@ -102,73 +102,88 @@ router.post('/subscribe', authenticate, async (req, res) => {
     }
   });
 
-  router.delete('/unsubscribe/:followerId/:followingUsername', async (req, res) => {
-    const { followerId, followingUsername } = req.params;
-    try {
-      const followingUser = await User.findOne({ where: { username: followingUsername } });
-  
-      if (!followingUser) {
-        return res.status(404).json({ error: 'Użytkownik nie istnieje' });
-      }
-  
-      const followingId = followingUser.id; 
-  
-      const subscription = await Follower.findOne({
-        where: { followerId, followingId },
-      });
-  
-      if (!subscription) {
-        return res.status(404).json({ error: 'Nie znaleziono subskrypcji' });
-      }
-  
-      await subscription.destroy();
-  
-      client.publish(`user/${followingId}/subscribers`, JSON.stringify({
-        userId: followingId,
-        relatedUserId: followerId,
-        action: 'unsubscribe',
-        followerId,
-        followingId,
-        contentText: `${followingUsername} nie subskrybujesz!`
-      }));
-  
-      return res.status(200).json({ message: 'Subskrypcja usunięta' });
-    } catch (error) {
-      console.error('Błąd podczas usuwania subskrypcji:', error);
-      return res.status(500).json({ error: 'Błąd serwera' });
+router.delete('/unsubscribe/:followerId/:followingUsername', async (req, res) => {
+const { followerId, followingUsername } = req.params;
+try {
+    const followingUser = await User.findOne({ where: { username: followingUsername } });
+
+    if (!followingUser) {
+    return res.status(404).json({ error: 'Użytkownik nie istnieje' });
     }
-  });
-  
-  router.delete('/unsubscribe1/:followerId/:followingId', async (req, res) => {
-    const { followerId, followingId } = req.params;
-  
-    try {
-      const subscription = await Follower.findOne({
-        where: { followerId, followingId },
-      });
-  
-      if (!subscription) {
-        return res.status(404).json({ error: 'Nie znaleziono subskrypcji' });
-      }
-  
-      await subscription.destroy();
-  
-      client.publish(`user/${followingId}/subscribers`, JSON.stringify({
-        userId: followingId,
-        relatedUserId: followerId,
-        action: 'unsubscribe',
-        followerId,
-        followingId,
-        contentText: `${followingUsername} nie subskrybujesz!`
-      }));
-  
-      return res.status(200).json({ message: 'Subskrypcja usunięta' });
-    } catch (error) {
-      console.error('Błąd podczas usuwania subskrypcji:', error);
-      return res.status(500).json({ error: 'Błąd serwera' });
+
+    const followingId = followingUser.id; 
+
+    const subscription = await Follower.findOne({
+    where: { followerId, followingId },
+    });
+
+    if (!subscription) {
+    return res.status(404).json({ error: 'Nie znaleziono subskrypcji' });
     }
-  });
+
+    await subscription.destroy();
+
+    client.publish(`user/${followingId}/subscribers`, JSON.stringify({
+    userId: followingId,
+    relatedUserId: followerId,
+    action: 'unsubscribe',
+    followerId,
+    followingId,
+    contentText: `${followingUsername} nie subskrybujesz!`
+    }));
+
+    return res.status(200).json({ message: 'Subskrypcja usunięta' });
+} catch (error) {
+    console.error('Błąd podczas usuwania subskrypcji:', error);
+    return res.status(500).json({ error: 'Błąd serwera' });
+}
+});
+
+router.delete('/unsubscribe1/:followerId/:followingId', async (req, res) => {
+const { followerId, followingId } = req.params;
+
+try {
+    const subscription = await Follower.findOne({
+    where: { followerId, followingId },
+    });
+
+    if (!subscription) {
+    return res.status(404).json({ error: 'Nie znaleziono subskrypcji' });
+    }
+
+    await subscription.destroy();
+
+    client.publish(`user/${followingId}/subscribers`, JSON.stringify({
+    userId: followingId,
+    relatedUserId: followerId,
+    action: 'unsubscribe',
+    followerId,
+    followingId,
+    contentText: `${followingUsername} nie subskrybujesz!`
+    }));
+
+    return res.status(200).json({ message: 'Subskrypcja usunięta' });
+} catch (error) {
+    console.error('Błąd podczas usuwania subskrypcji:', error);
+    return res.status(500).json({ error: 'Błąd serwera' });
+}
+});
   
+router.get('/:userId/followers', async (req, res) => {
+const { userId } = req.params;
+
+try {
+    const followers = await Follower.findAll({
+    where: { followingId: userId },
+    include: { model: User, as: 'follower', attributes: ['id', 'username'] },
+    });
+
+    return res.status(200).json(followers.map(f => f.follower));
+} catch (error) {
+    console.error('Błąd podczas pobierania subskrybentów:', error);
+    return res.status(500).json({ error: 'Błąd serwera' });
+}
+});
 
 module.exports = router;
 
