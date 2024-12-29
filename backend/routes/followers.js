@@ -224,6 +224,30 @@ try {
 }
 });
 
+
+router.get('/subscriptions/:userId/:name', async (req, res) => {
+    const { userId, name } = req.params;
+  
+    try {
+      const followingUser = await User.findOne({ where: { username: name } });
+  
+      if (!followingUser) {
+        return res.status(404).json({ error: 'Użytkownik, którego szukasz, nie istnieje' });
+      }
+  
+      const subscription = await Follower.findOne({
+        where: { followerId: userId, followingId: followingUser.id },
+      });
+  
+      res.status(200).json({ isSubscribed: !!subscription });
+    } catch (error) {
+      console.error('Błąd podczas sprawdzania subskrypcji:', error);
+      res.status(500).json({ error: 'Błąd serwera' });
+    }
+  });
+  
+  
+
 module.exports = router;
 
 
