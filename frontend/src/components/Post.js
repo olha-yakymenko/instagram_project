@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 import CommentSection from './CommentSection';
 import { useAuth } from './AuthContext';
@@ -9,22 +9,24 @@ import { useNotifications } from './NotificationContext';
 const Post = ({ post }) => {
   const { mqttClient } = useMqtt();
   const { user } = useAuth();
-  const { addNotification } = useNotifications();
   const [likes, setLikes] = useState(0);
   const [comments, setComments] = useState([]);
   const [userHasLiked, setUserHasLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [newDescription, setNewDescription] = useState(post.description);
-
+  const [showMenu, setShowMenu] = useState(false);
   const postId = post.id;
   const userId = user?.id || 0;
+  const menuRef = useRef(null);
+  const [imageError, setImageError] = useState(false);
+
 
   useEffect(() => {
     if (mqttClient) {
       mqttClient.subscribe(`posts/${postId}/likes`, (err) => {
         if (err) {
-          console.error('MQTT subscribe error for likes:', err);
+          console.warn('MQTT subscribe error for likes:', err);
         }
       });
 
@@ -65,7 +67,7 @@ const Post = ({ post }) => {
   const fetchLikes = async () => {
     try {
       const { data } = await api.get(`/posts/${post.id}/likes`);
-      setLikes(data.likes);  
+      setLikes(data.likes); 
     } catch (error) {
       console.error('Error fetching likes:', error);
     }
@@ -122,20 +124,57 @@ const Post = ({ post }) => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false); 
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
 
   if (!post.id) {
     return <p>Loading...</p>;
   }
   console.log("POST", post)
+
+  const handleImageError = () => {
+    setImageError(true);
+  };
   return (
     <div className="post">
-      <img src={post.image} alt="photo" />
-      {user?.id === post.User?.id && (
-        <>
-          <button className='delete' onClick={() => deletePost(post.id)}>Delete</button>
-          <button className="edit" onClick={() => setIsEditing(true)}>Edit</button>
-        </>
+      {!imageError ? (
+        <img
+          src={post.image}  
+          alt="photo"
+          onError={handleImageError}  
+          style={{ width: '100%', height: 'auto' }} 
+        />
+      ) : (
+        <p>0</p>  
       )}
+
+      <div className="post-header">
+        <p>Author: {post.User?.username || 'Unknown'}</p>
+        {user?.id === post.User?.id && (
+          <i
+            className="fas fa-ellipsis-h post-menu-icon"
+            onClick={() => setShowMenu((prev) => !prev)} // Toggling menu
+          ></i>
+        )}
+        {showMenu && (
+          <div className="post-menu" ref={menuRef}>
+            <button onClick={() => deletePost(post.id)}>Delete</button>
+            <button onClick={() => setIsEditing(true)}>Edit</button>
+          </div>
+        )}
+      </div>
 
       {isEditing ? (
         <div>
@@ -150,13 +189,11 @@ const Post = ({ post }) => {
         <h3>{post.description}</h3>
       )}
 
-      <p>Author: {post.User?.username || 'Unknown'}</p>
-
       <div className="like-com">
         <i 
           className={`fa${userHasLiked ? 's' : 'r'} fa-heart like-button`} 
           onClick={handleLike}
-          style={{ color: userHasLiked ? 'red' : 'black', transition: 'color 0.3s ease'}}
+          style={{ color: userHasLiked ? 'red' : 'black', transition: 'color 0.3s ease' }}
         ></i>
         <p>{likes} Likes</p>
 

@@ -18,6 +18,7 @@ const CommentSection = ({ postId, comments, currentUser, mqttClient }) => {
     if (!user) return 
     try {
       const { data } = await api.post(`/posts/${postId}/comments`, { content: newComment });
+      console.log("K", data)
       setLocalComments((prevComments) => [...prevComments, data]);
       setNewComment('');
     } catch (error) {
@@ -30,7 +31,7 @@ const CommentSection = ({ postId, comments, currentUser, mqttClient }) => {
       <div className="comments-list">
   {localComments.map((comment, index) => (
     <div key={comment?.id || index} className="comment">
-      <p>{comment?.content || ' '}</p> 
+      <p>{comment?.User?.username ? `${comment.User.username} ` : ''}: {comment?.content || ' '}</p> 
     </div>
   ))}
 </div>
