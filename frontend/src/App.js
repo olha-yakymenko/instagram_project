@@ -1,4 +1,5 @@
 import React from 'react';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './components/AuthContext';
 import Login from './pages/Login';
