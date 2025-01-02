@@ -5,7 +5,7 @@ import Followers from '../components/Followers';
 import Post from '../components/Post';
 import { useParams } from 'react-router-dom';
 import {useAuth} from '../components/AuthContext'
-
+import './CSS/Profile.css'
 
 const Profile = () => {
   const [posts, setPosts] = useState([]);
