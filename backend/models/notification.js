@@ -22,7 +22,7 @@ const Notification = sequelize.define('Notification', {
     },
     postId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        allowNull: true,
     },
     type: {
         type: DataTypes.STRING,

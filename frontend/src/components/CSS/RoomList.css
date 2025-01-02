@@ -1,0 +1,146 @@
+.room-list-container {
+    margin: 0 auto;
+    max-width: 500px;
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    background-color: #fafafa;
+}
+
+h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #262626;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 10px;
+    border-radius: 50px;
+    font-size: 1rem;
+    background-color: #f2f2f2;
+    color: #333;
+    margin-right: 10px;
+    width: 300px
+}
+
+.search-bar button {
+    background-color: #32363b;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding:  20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    width: 70px
+}
+
+.search-bar button:disabled {
+    background-color: #ccc;
+}
+
+.search-results {
+    margin-top: 20px;
+
+}
+
+.search-results ul {
+    list-style: none;
+    padding: 0;
+}
+
+.search-results li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+    
+}
+
+.search-results li:hover {
+    background-color: #f9f9f9;
+}
+
+.search-results button {
+    background-color: #32363b;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 130px
+}
+
+.search-results button:hover {
+    background-color: #32363b;
+}
+
+.room-list {
+    margin-top: 20px;
+}
+
+.room-list ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+.room-list li {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s;
+}
+
+.room-list li:hover {
+    background-color: #f9f9f9;
+}
+
+.room-list a {
+    text-decoration: none;
+    color: #262626;
+    font-weight: bold;
+    font-size: 1rem;
+    display: block;
+    text-align: center;
+}
+
+.room-list a:hover {
+    color: #32363b;
+}
+
+.room-list a span {
+    font-size: 0.9rem;
+    color: #8e8e8e;
+    display: block;
+    margin-top: 5px;
+}

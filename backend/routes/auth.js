@@ -80,6 +80,25 @@ router.get('/user/:username', (req, res) => {
     });
 });
 
+router.get('/user-id/:username', async (req, res) => {
+    const { username } = req.params;
+    
+    try {
+        // Pobieranie użytkownika na podstawie username
+        const user = await User.findOne({ where: { username } });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Zwracamy tylko ID użytkownika
+        res.json({ id: user.id });
+    } catch (error) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+
 router.post('/logout', (req, res) => {
     res.clearCookie('auth_token', {
         httpOnly: true,

@@ -202,6 +202,38 @@ router.get('/:userId/following', async (req, res) => {
     }
   });
 
+  router.get('/:userId/followers', async (req, res) => {
+    const { userId } = req.params;
+  
+    try {
+      const followers = await Follower.findAll({
+        where: { followingId: userId },
+        include: { model: User, as: 'follower', attributes: ['id', 'name'] }, // Zamiana 'username' na 'name'
+      });
+  
+      return res.status(200).json(followers.map(f => f.follower));
+    } catch (error) {
+      console.error('Błąd podczas pobierania subskrybentów:', error);
+      return res.status(500).json({ error: 'Błąd serwera' });
+    }
+  });
+
+  router.get('/:userId/following', async (req, res) => {
+    const { userId } = req.params;
+  
+    try {
+      const following = await Follower.findAll({
+        where: { followerId: userId },
+        include: { model: User, as: 'following', attributes: ['id', 'name'] }, // Zamiana 'username' na 'name'
+      });
+  
+      return res.status(200).json(following.map(f => f.following));
+    } catch (error) {
+      console.error('Błąd podczas pobierania subskrybowanych użytkowników:', error);
+      return res.status(500).json({ error: 'Błąd serwera' });
+    }
+  });
+  
 
 router.get('/:username/count', async (req, res) => {
 const { username } = req.params;

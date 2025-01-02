@@ -90,10 +90,19 @@ const Profile = () => {
         <>
           <div className="profile-info">
           <div className="profile-stats">
-         <p><strong>{posts.length}</strong> posty</p>
-        <p><strong>{followersCount}</strong> subskrybenci</p>
-         <p><strong>{followingCount}</strong> subskrybowani</p>
-       </div>
+  <p><strong>{posts.length}</strong> posty</p>
+  <p 
+    onClick={() => setShowFollowersModal(true)} // dodaj to kliknięcie
+  >
+    <strong>{followersCount}</strong> subskrybenci
+  </p>
+  <p 
+    onClick={() => setShowFollowingModal(true)} // dodaj to kliknięcie
+  >
+    <strong>{followingCount}</strong> subskrybowani
+  </p>
+</div>
+
         {Cookies.get('auth_token') && user.username !== userId && (
         <button onClick={toggleSubscription}>
             {isSubscribed ? 'Usuń subskrypcję' : 'Subskrybuj'}
@@ -111,14 +120,16 @@ const Profile = () => {
           {showFollowersModal && (
             <div className="modal">
               <button onClick={() => setShowFollowersModal(false)}>Zamknij</button>
-              <Followers type="followers" />
+              {console.log("P", userId)}
+              <Followers type="followers" userName={userId} />
             </div>
           )}
 
           {showFollowingModal && (
             <div className="modal">
               <button onClick={() => setShowFollowingModal(false)}>Zamknij</button>
-              <Followers type="following" />
+              {console.log("P", userId)}
+              <Followers type="following" userName={userId} />
             </div>
           )}
         </>
