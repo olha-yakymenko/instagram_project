@@ -4,7 +4,6 @@ import CommentSection from './CommentSection';
 import { useAuth } from './AuthContext';
 import { useMqtt } from './MqttContext';
 import './CSS/Post.css';
-import { useNotifications } from './NotificationContext';
 
 const Post = ({ post }) => {
   const { mqttClient } = useMqtt();
@@ -157,7 +156,6 @@ const Post = ({ post }) => {
           style={{ width: '100%', height: 'auto' }} 
         />
       ) : (
-        //<p>0</p>  
         <img
         src="http://localhost:5007/uploads/egg.jpg"  
           alt="photo"

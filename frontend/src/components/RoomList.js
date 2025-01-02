@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';  
 import { useNavigate } from 'react-router-dom';      
-import axios from '../services/api';                          
+import api from '../services/api';                          
 import { Link } from 'react-router-dom';            
-
+import './CSS/RoomList.css'
 const RoomList = () => {
   const [rooms, setRooms] = useState([]);           
   const [searchTerm, setSearchTerm] = useState('');  
@@ -13,9 +13,9 @@ const RoomList = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await axios.get('message/rooms', { withCredentials: true });
+        const response = await api.get('/message/rooms', { withCredentials: true });
+        setRooms(response.data)
         console.log(response.data); 
-        setRooms(response.data);
       } catch (error) {
         console.error('Error fetching rooms', error);
       }
@@ -29,8 +29,9 @@ const RoomList = () => {
 
     setLoading(true);  
     try {
-      const response = await axios.get(`/message/search-user/${searchTerm}`, { withCredentials: true });
+      const response = await api.get(`/message/search-user/${searchTerm}`, { withCredentials: true });
       setSearchResults(response.data);
+      console.log("wysz", response.data)
     } catch (error) {
       console.error('Error searching users', error);
     } finally {
@@ -40,7 +41,7 @@ const RoomList = () => {
 
   const startChat = async (recipientId) => {
     try {
-      const response = await axios.post('/message/start-chat', { recipientId }, { withCredentials: true });
+      const response = await api.post('/message/start-chat', { recipientId }, { withCredentials: true });
       const { roomId } = response.data;
       navigate(`/chat/${roomId}`);
     } catch (error) {
@@ -49,10 +50,10 @@ const RoomList = () => {
   };
 
   return (
-    <div>
-      <h2>Lista dostępnych pokoi</h2>
+    <div className="room-list-container">
+      <h2>Lista czatów</h2>
       
-      <div>
+      <div className="search-bar">
         <input
           type="text"
           value={searchTerm}
@@ -60,11 +61,11 @@ const RoomList = () => {
           placeholder="Wyszukaj użytkownika"
         />
         <button onClick={searchUsers} disabled={loading}>
-          {loading ? 'Ładowanie...' : 'Szukaj'}
+          {loading ? 'Ładowanie...' : <i className="fas fa-search"></i>}
         </button>
       </div>
 
-      <div>
+      <div className="search-results">
         {searchResults.length > 0 ? (
           <ul>
             {searchResults.map((user) => (
@@ -79,16 +80,18 @@ const RoomList = () => {
         ) : null}
       </div>
 
-      <h3>Twoje pokoje</h3>
-      <ul>
-        {rooms.map((room) => (
-          <li key={room.id}>
-            <Link to={`/chat/${room.id}`}>
-              Pokój między {room.user1 || 'Nieznany użytkownik'} a {room.user2 || 'Nieznany użytkownik'}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      <h3>Twoje czaty</h3>
+      <div className="room-list">
+        <ul>
+          {rooms.map((room) => (
+            <li key={room.id}>
+              <Link to={`/chat/${room.id}`}>
+                {room.user2}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

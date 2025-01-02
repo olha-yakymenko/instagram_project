@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 import Cookies from 'js-cookie'; 
-
+import './CSS/CreatePost.css'
 const CreatePost = () => {
   const { user } = useAuth();
   const [description, setDescription] = useState('');

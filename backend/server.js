@@ -23,7 +23,7 @@ const server = http.createServer(app);
 
 const io = socketIo(server, {
   cors: {
-    origin: 'http://localhost',
+    origin: ['http://localhost', 'http://localhost:3000'],
     methods: ['GET', 'POST'],
     credentials: true,
   }
