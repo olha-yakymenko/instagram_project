@@ -14,7 +14,7 @@ router.get('/ads-stream', (req, res) => {
         const ad = ads[index];
         res.write(`data: ${JSON.stringify(ad)}\n\n`);
         index = (index + 1) % ads.length; 
-    }, 5000);
+    }, 500000);
 
     req.on('close', () => {
         clearInterval(interval);

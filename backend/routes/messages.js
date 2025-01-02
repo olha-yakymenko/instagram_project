@@ -124,6 +124,21 @@ router.get('/rooms', authenticate, async (req, res) => {
     }
 });
 
+router.get('/:roomId', async (req, res) => {
+    const { roomId } = req.params;
+
+    try {
+        const messages = await Message.findAll({ where: { roomId } });
+        if (messages.length === 0) {
+            return res.status(404).json({ error: 'No messages found in this room' });
+        }
+        res.json(messages);
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ error: 'Server error while fetching messages' });
+    }
+});
+
 function socketSetup(io) {
     io.on('connection', (socket) => {
         console.log('User connected to WebSocket', socket.id);

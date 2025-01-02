@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FaHome, FaSearch, FaRegPlusSquare, FaRegHeart, FaUserCircle } from 'react-icons/fa';
@@ -7,14 +6,14 @@ import './CSS/Navbar.css';
 
 const Navbar = () => {
   const { user, logout } = useAuth(); 
-
+  
   return (
     <nav className="navbar">
       <ul className="navbar-list">
         <li className="navbar-item">
           <Link to="/" className="navbar-link">
             <FaHome className="navbar-icon" />
-            Home
+            Homeaa
           </Link>
         </li>
         <li className="navbar-item">
@@ -39,7 +38,7 @@ const Navbar = () => {
           </Link>
         </li>
             <li className="navbar-item">
-              <Link to="/profile" className="navbar-link">
+            <Link to={`/profile/${user.username}`} className="navbar-link">
                 <FaUserCircle className="navbar-icon" />
                 Profile
               </Link>

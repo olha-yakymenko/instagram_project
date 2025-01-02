@@ -100,7 +100,7 @@ const Home = () => {
                         <div key={`ad-${index}`} className="ad-container">
                             <a href={item.content.link} target="_blank" rel="noopener noreferrer">
                                 <img
-                                    src={`http://localhost:5000/ads/${item.content.imageUrl}`}
+                                    src={`http://localhost:5007/ads${item.content.imageUrl}`}
                                     alt="Advertisement"
                                 />
                             </a>
