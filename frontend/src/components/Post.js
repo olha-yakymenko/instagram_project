@@ -157,7 +157,13 @@ const Post = ({ post }) => {
           style={{ width: '100%', height: 'auto' }} 
         />
       ) : (
-        <p>0</p>  
+        //<p>0</p>  
+        <img
+        src="http://localhost:5007/uploads/egg.jpg"  
+          alt="photo"
+          onError={handleImageError}  
+          style={{ width: '100%', height: 'auto' }} 
+        />
       )}
 
       <div className="post-header">
