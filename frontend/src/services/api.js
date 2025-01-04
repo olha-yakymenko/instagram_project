@@ -3,7 +3,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const api = axios.create({
-    baseURL: 'http://localhost:5007/api',
+    baseURL: 'https://localhost:5007/api',
     withCredentials: true, 
 });
 

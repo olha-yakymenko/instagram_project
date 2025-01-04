@@ -19,8 +19,13 @@ const Chat = () => {
       return;
     }
 
-    const newSocket = io('http://localhost:5007', {
+    // const newSocket = io('https://localhost:5007', {
+    //   auth: { token: userToken },
+    // });
+    const newSocket = io('https://localhost:5007', {
       auth: { token: userToken },
+      transports: ['websocket'], 
+      withCredentials: true,
     });
 
     setSocket(newSocket);

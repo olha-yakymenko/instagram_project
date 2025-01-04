@@ -14,7 +14,7 @@ const Home = () => {
             sseConnection.close(); 
         }
 
-        const eventSource = new EventSource('http://localhost:5007/api/ads/ads-stream');
+        const eventSource = new EventSource('https://localhost:5007/api/ads/ads-stream');
 
         eventSource.onmessage = (event) => {
             const ad = JSON.parse(event.data);
@@ -100,7 +100,7 @@ const Home = () => {
                         <div key={`ad-${index}`} className="ad-container">
                             <a href={item.content.link} target="_blank" rel="noopener noreferrer">
                                 <img
-                                    src={`http://localhost:5007/ads${item.content.imageUrl}`}
+                                    src={`https://localhost:5007/ads${item.content.imageUrl}`}
                                     alt="Advertisement"
                                 />
                             </a>

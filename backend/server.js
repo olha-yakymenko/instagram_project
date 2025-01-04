@@ -8,10 +8,15 @@ const adsRoutes=require('./routes/ads')
 const notificationRoutes = require('./routes/notifications');
 const followerRoute=require('./routes/followers')
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const path = require('path');
 const socketIo = require('socket.io');
 require('dotenv').config();
 const cookieParser = require('cookie-parser');
+const privateKey = fs.readFileSync('/home/olha/studia2/psw/git_projekt/instagram_project/localhost.key', 'utf8');
+const certificate = fs.readFileSync('/home/olha/studia2/psw/git_projekt/instagram_project/localhost.crt', 'utf8');
+const credentials = { key: privateKey, cert: certificate };
 
 const { router: messageRoutes, socketSetup } = require('./routes/messages');
 
@@ -19,17 +24,18 @@ const app = express();
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/ads', express.static(path.join(__dirname, 'ads')));
 
-const server = http.createServer(app);
+const server = https.createServer(credentials, app);
 
 const io = socketIo(server, {
   cors: {
-    origin: ['http://localhost', 'http://localhost:3000'],
+    origin: ['https://localhost', 'http://localhost:3000'],
     methods: ['GET', 'POST'],
     credentials: true,
-  }
+  },
 });
 
-const allowedOrigins = ['http://localhost', 'http://localhost:3000']; 
+
+const allowedOrigins = ['https://localhost', 'http://localhost:3000']; 
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -43,6 +49,9 @@ app.use(
     credentials: true,
   })
 );
+
+
+
 
 app.use(express.json());
 app.use(cookieParser());
@@ -66,6 +75,7 @@ sequelize.sync().then(() => {
 socketSetup(io);
 
 const PORT = process.env.PORT || 5007;
+
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log('Backend działa na https://localhost:5007');
 });

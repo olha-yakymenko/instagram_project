@@ -1,4 +1,4 @@
-div {
+/* div {
     max-width: 500px;
     margin: 0 auto;
     padding: 20px;
@@ -54,8 +54,8 @@ div {
   
   button:active {
     background-color: #006bb6;
-  }
-  
+  } */
+/*   
   @media (max-width: 600px) {
     div {
       padding: 15px;
@@ -72,4 +72,4 @@ div {
       padding: 10px;
     }
   }
-  
+   */

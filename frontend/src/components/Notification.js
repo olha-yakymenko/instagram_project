@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNotifications } from './NotificationContext';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
+import './CSS/Notification.css'
 
 const Notifications = () => {
   const { notifications: contextNotifications, removeNotification } = useNotifications();

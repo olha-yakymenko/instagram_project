@@ -104,7 +104,7 @@ router.get('/', async (req, res) => {
         const postsWithImageUrls = posts.map(post => {
             return {
                 ...post.dataValues,
-                image: `http://localhost:5007${post.image}`, 
+                image: `https://localhost:5007${post.image}`, 
             };
         });
 
@@ -195,7 +195,7 @@ router.get('/:username', async (req, res) => {
         const postsWithImageUrls = posts.map(post => {
             return {
                 ...post.dataValues,
-                image: `http://localhost:5007${post.image}`,  
+                image: `https://localhost:5007${post.image}`,  
             };
         });
 

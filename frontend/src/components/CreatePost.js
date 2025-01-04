@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import axios from 'axios';
+import axios from '../services/api';
 import { useAuth } from './AuthContext';
 import Cookies from 'js-cookie'; 
 import './CSS/CreatePost.css'
@@ -36,7 +36,7 @@ const CreatePost = () => {
       formData.append('image', image); 
 
       const response = await axios.post(
-        'http://localhost:5000/api/posts',
+        '/posts',
         formData,
         {
           headers: {

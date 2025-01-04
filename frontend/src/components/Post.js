@@ -157,7 +157,7 @@ const Post = ({ post }) => {
         />
       ) : (
         <img
-        src="http://localhost:5007/uploads/egg.jpg"  
+        src="https://localhost:5007/uploads/egg.jpg"  
           alt="photo"
           onError={handleImageError}  
           style={{ width: '100%', height: 'auto' }} 
