@@ -15,46 +15,53 @@ router.post('/register', async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 });
+
+
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    console.log('Login attempt:', { username, password });
     try {
-      const user = await User.findOne({ where: { username } });
-      console.log("USER",user)
-      if (!user) {
-        console.log('User not found');
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) {
-        console.log('Invalid password');
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
-  
-      const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET, { expiresIn: '6h' });
-      console.log('JWT token generated:', token);
-  
-      res.cookie('auth_token', token, {
-        httpOnly: false,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 3600000,
-        sameSite: 'Lax',
-      });
+        const user = await User.findOne({ where: { username } });
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
 
-      res.json({ message: 'Login successful', token });
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const payload = {
+            id: user.id,       
+            username: user.username,
+        };
+
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: '6h', 
+        });
+
+        res.cookie(`auth_token_${user.username}`, token, {
+            httpOnly: true,  
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 6 * 60 * 60 * 1000, 
+            sameSite: 'None',
+        });
+
+        res.json({ message: 'Login successful', username: user.username, token });
     } catch (error) {
-      console.error('Error while logging in:', error);
-      res.status(500).json({ error: 'Server error' });
+        console.error('Error during login:', error);
+        res.status(500).json({ error: 'Server error' });
     }
-  });
-  
+});
+
 
 router.get('/user/:username', (req, res) => {
-    const token = req.cookies.auth_token; 
-
-    if (!token) {
-        return res.status(403).json({ error: 'Access denied, token missing' });
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(403).json({ error: 'Access denied, token missing or malformed' });
     }
+
+    const token = authHeader.split(' ')[1];
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
         if (err) {
@@ -62,9 +69,9 @@ router.get('/user/:username', (req, res) => {
         }
 
         const { username } = req.params;
+
         try {
             const user = await User.findOne({ where: { username } });
-
             if (!user) {
                 return res.status(404).json({ error: 'User not found' });
             }
@@ -72,26 +79,24 @@ router.get('/user/:username', (req, res) => {
             if (decoded.username !== username) {
                 return res.status(403).json({ error: 'Access denied' });
             }
-
-            res.json(user);  
+            res.json(user);
         } catch (error) {
+            console.error('Server error:', error); // Zalogowanie błędów serwera
             res.status(500).json({ error: 'Server error' });
         }
     });
 });
 
+
 router.get('/user-id/:username', async (req, res) => {
     const { username } = req.params;
     
     try {
-        // Pobieranie użytkownika na podstawie username
         const user = await User.findOne({ where: { username } });
 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-
-        // Zwracamy tylko ID użytkownika
         res.json({ id: user.id });
     } catch (error) {
         res.status(500).json({ error: 'Server error' });

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
@@ -10,14 +9,18 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); 
+
     try {
-      login(username, password);
+      await login(username, password);  
       navigate('/'); 
     } catch (error) {
       console.error('Login failed:', error.response?.data?.error || error.message);
+      setError(error.response?.data?.error || 'Login failed'); 
     }
   };
 
@@ -34,10 +37,10 @@ const Login = () => {
             onChange={(e) => setUsername(e.target.value)}
             required
             sx={{
-              marginBottom: 2,  
+              marginBottom: 2,
               '& .MuiInputBase-root': {
-                borderRadius: '8px', 
-                borderColor: '#ddd', 
+                borderRadius: '8px',
+                borderColor: '#ddd',
               },
             }}
           />
@@ -59,6 +62,11 @@ const Login = () => {
             }}
           />
         </div>
+        {error && (
+          <Typography color="error" sx={{ marginBottom: 2 }}>
+            {error} 
+          </Typography>
+        )}
         <Button
           type="submit"
           variant="contained"
@@ -68,7 +76,7 @@ const Login = () => {
             padding: '12px',
             backgroundColor: '#3f51b5',
             '&:hover': {
-              backgroundColor: '#303f9f', 
+              backgroundColor: '#303f9f',
             },
           }}
         >
@@ -83,4 +91,3 @@ const Login = () => {
 };
 
 export default Login;
-

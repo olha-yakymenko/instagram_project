@@ -82,6 +82,7 @@ const Post = ({ post }) => {
   };
 
   const handleLike = async () => {
+    console.log("userId", user.id)
     try {
       if (userHasLiked) {
         await api.delete(`/posts/${post.id}/likes`, { data: { userId: user.id } });
@@ -141,7 +142,7 @@ const Post = ({ post }) => {
   if (!post.id) {
     return <p>Loading...</p>;
   }
-  console.log("POST", post)
+  // console.log("POST", post)
 
   const handleImageError = () => {
     setImageError(true);
@@ -169,7 +170,7 @@ const Post = ({ post }) => {
         {user?.id === post.User?.id && (
           <i
             className="fas fa-ellipsis-h post-menu-icon"
-            onClick={() => setShowMenu((prev) => !prev)} // Toggling menu
+            onClick={() => setShowMenu((prev) => !prev)} 
           ></i>
         )}
         {showMenu && (

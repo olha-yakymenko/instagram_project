@@ -5,22 +5,28 @@ const Comment = require('../models/comment');
 const jwt = require('jsonwebtoken');
 const Notification = require('../models/notification') 
 const router = express.Router();
+
 const authenticate = (req, res, next) => {
-    const token = req.headers.authorization && req.headers.authorization.split(' ')[1];
-    if (!token) {
-      return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego' });
-    }
-  
-    try {
+  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+
+  console.log('Received token:', token); 
+
+  if (!token) {
+      return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w nagłówkach' });
+  }
+
+  try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('Decoded token:', decoded); 
       req.user = decoded; 
-      console.log('Token zweryfikowany:', decoded); 
       next();
-    } catch (error) {
+  } catch (error) {
       console.error('Błąd weryfikacji tokenu:', error);
       return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
-    }
-  };
+  }
+};
+
+
 router.get('/:userId', authenticate, async (req, res) => {
     const { userId } = req.params;  
 

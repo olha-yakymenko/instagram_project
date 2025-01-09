@@ -6,10 +6,10 @@ const NotificationList = () => {
   const { notifications } = useNotifications();
   return (
     <div className="notification-container">
-      {notifications.map((notification) => {
+      {notifications.map((notification, index) => {
         return (
           <div
-            key={notification.id}
+            key={notification.id || index}
             className={`notification ${notification.type}`}
           >
             <p>{notification.contentText}</p>

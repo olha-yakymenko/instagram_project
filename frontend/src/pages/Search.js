@@ -1,9 +1,6 @@
-
 import React, { useState } from 'react';
 import api from '../services/api'; 
 import Post from '../components/Post'; 
-import Cookies from 'js-cookie'; 
-
 import { useNavigate } from 'react-router-dom'; 
 
 const Search = () => {
@@ -17,15 +14,8 @@ const Search = () => {
     try {
       setLoading(true);
       setError('');
-      const token = Cookies.get('token');
-
-      if (!token) {
-        console.error('Brak tokenu lub nazwy użytkownika');
-        return;
-      }
-
+      
       const response = await api.get(`/search?username=${username}`, {
-        headers: { Authorization: `Bearer ${token}` },
       });
 
       if (response.data.length === 0) {

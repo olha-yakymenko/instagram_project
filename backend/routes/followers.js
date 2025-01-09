@@ -16,22 +16,25 @@ client.on('error', (err) => {
 });
 
 const authenticate = (req, res, next) => {
-  const token = req.cookies && req.cookies.token;
+  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+
+  console.log('Received token:', token); 
 
   if (!token) {
-    return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w ciasteczkach' });
+      return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w nagłówkach' });
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    console.log('Token zweryfikowany:', decoded);
-    next();
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('Decoded token:', decoded); 
+      req.user = decoded; 
+      next();
   } catch (error) {
-    console.error('Błąd weryfikacji tokenu:', error);
-    return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
+      console.error('Błąd weryfikacji tokenu:', error);
+      return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
   }
 };
+
 
 router.post('/subscribe', authenticate, async (req, res) => {
     const { followingUsername } = req.body; 

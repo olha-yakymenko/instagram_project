@@ -11,8 +11,8 @@
   }
   
   .notification {
-    background-color: #333;
-    color: #fff;
+    background-color: rgb(255, 103, 184);
+    color: white;
     padding: 15px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);

@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import Cookies from 'js-cookie';
 import './CSS/Chat.css'
+import {useAuth} from './AuthContext'
 const Chat = () => {
   const { roomId } = useParams(); 
   const [socket, setSocket] = useState(null);
@@ -11,17 +12,15 @@ const Chat = () => {
   const [roomInfo, setRoomInfo] = useState({ user1: '', user2: '' });
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
+  const {user}=useAuth()
 
   useEffect(() => {
-    const userToken = Cookies.get('auth_token'); 
+    const userToken = Cookies.get(`auth_token_${user.username}`); 
     if (!userToken) {
       console.error('Authentication token is missing');
       return;
     }
 
-    // const newSocket = io('https://localhost:5007', {
-    //   auth: { token: userToken },
-    // });
     const newSocket = io('https://localhost:5007', {
       auth: { token: userToken },
       transports: ['websocket'], 

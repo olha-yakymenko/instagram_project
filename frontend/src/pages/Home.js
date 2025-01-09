@@ -33,7 +33,6 @@ const Home = () => {
     const fetchPosts = async () => {
         try {
             const { data } = await axios.get('/posts');
-            console.log("DTA", data);
             setPosts(data);
         } catch (error) {
             console.error('Error fetching posts:', error);

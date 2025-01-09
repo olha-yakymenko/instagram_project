@@ -8,21 +8,41 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 
+// const authenticate = (req, res, next) => {
+//     console.log("Cookies", req.cookies)
+//     const token = req.cookies.token; 
+//     if (!token) {
+//         return res.status(401).json({ error: 'No token' });
+//     }
+
+//     try {
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+//         req.user = decoded; 
+//         console.log('Verified token:', decoded); 
+//         next();
+//     } catch (error) {
+//         console.error('Error during verifying token:', error);
+//         return res.status(401).json({ error: 'Bad or expired token' });
+//     }
+// };
+
 const authenticate = (req, res, next) => {
-    console.log("Cookies", req.cookies)
-    const token = req.cookies.token; 
+    const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+
+    console.log('Received token:', token); 
+
     if (!token) {
-        return res.status(401).json({ error: 'No token' });
+        return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w nagłówkach' });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        console.log('Decoded token:', decoded); 
         req.user = decoded; 
-        console.log('Verified token:', decoded); 
         next();
     } catch (error) {
-        console.error('Error during verifying token:', error);
-        return res.status(401).json({ error: 'Bad or expired token' });
+        console.error('Błąd weryfikacji tokenu:', error);
+        return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
     }
 };
 
