@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const cookieParser = require('cookie-parser');
+const multer = require("multer")
 
 const router = express.Router();
 router.use(cookieParser());
@@ -111,6 +112,49 @@ router.post('/logout', (req, res) => {
         sameSite: 'Strict',
     });
     res.status(200).json({ message: 'Logged out successfully' });
+});
+
+const storage = multer.memoryStorage();  
+const upload = multer({ storage: storage }); 
+router.put('/user/:userId/profile-picture', upload.single('profilePicture'), async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        user.profile_picture = req.file.buffer;
+        await user.save();
+
+        res.json({ message: 'Profile picture updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Something went wrong' });
+    }
+});
+
+router.get('/user/:userId/profile-picture', async (req, res) => {
+    const { userId } = req.params;
+
+    try {
+        const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (!user.profile_picture) {
+            return res.status(404).json({ error: 'Profile picture not found' });
+        }
+
+        res.setHeader('Content-Type', 'image/jpeg'); 
+        res.send(user.profile_picture); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Something went wrong' });
+    }
 });
 
 module.exports = router;
