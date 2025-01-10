@@ -28,14 +28,14 @@ const server = https.createServer(credentials, app);
 
 const io = socketIo(server, {
   cors: {
-    origin: ['https://localhost', 'http://localhost:3000'],
+    origin: ['https://localhost', 'http://localhost:3001'],
     methods: ['GET', 'POST'],
     credentials: true,
   },
 });
 
 
-const allowedOrigins = ['https://localhost', 'http://localhost:3000']; 
+const allowedOrigins = ['https://localhost', 'http://localhost:3001']; 
 app.use(
   cors({
     origin: function (origin, callback) {

@@ -141,6 +141,60 @@
     font-size: 14px;
     margin-top: 10px;
   }
+  .profile-picture-wrapper {
+    position: relative;
+    width: 120px; 
+    height: 120px; 
+    margin: 0 auto;
+  }
+  
+  .profile-picture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%; 
+    object-fit: cover; 
+    border: 2px solid #ccc;
+  }
+  
+  .placeholder-picture {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%; 
+    background-color: #e0e0e0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: #aaa;
+    border: 2px solid #ccc; 
+  }
+  
+  .upload-button {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: #007bff; 
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  }
+  
+  .upload-button .plus-icon {
+    font-size: 18px;
+  }
+  
+  .upload-button:hover {
+    background-color: #0056b3; 
+  }
+  
   
   @media (max-width: 768px) {
     .profile-header {
