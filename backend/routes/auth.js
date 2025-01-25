@@ -7,13 +7,42 @@ const multer = require("multer")
 
 const router = express.Router();
 router.use(cookieParser());
+
+const fs = require('fs');
+const path = require('path');
+
+function loadDefaultProfilePicture() {
+    const defaultImagePath = path.join(__dirname, '..', 'uploads', 'default_photo.jpg');
+    if (!fs.existsSync(defaultImagePath)) {
+        throw new Error('Default profile picture not found');
+    }
+    return fs.readFileSync(defaultImagePath);
+}
+
+
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
+
     try {
-        const newUser = await User.create({ username, password: await bcrypt.hash(password, 10) });
-        res.status(201).json({ message: 'User registered', user: newUser });
+        const existingUser = await User.findOne({ where: { username } });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Username already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const defaultProfilePicture = loadDefaultProfilePicture();
+
+        const newUser = await User.create({
+            username,
+            password: hashedPassword,  
+            profile_picture: defaultProfilePicture,  
+        });
+
+        res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error('Error during registration:', error);
+        res.status(500).json({ error: 'Something went wrong during registration' });
     }
 });
 
@@ -53,6 +82,7 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Server error' });
     }
 });
+
 
 
 router.get('/user/:username', (req, res) => {
@@ -140,6 +170,28 @@ router.get('/user/:userId/profile-picture', async (req, res) => {
 
     try {
         const user = await User.findByPk(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (!user.profile_picture) {
+            return res.status(404).json({ error: 'Profile picture not found' });
+        }
+
+        res.setHeader('Content-Type', 'image/jpeg'); 
+        res.send(user.profile_picture); 
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Something went wrong' });
+    }
+});
+
+router.get('/user/:username/picture', async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ where: { username } });
 
         if (!user) {
             return res.status(404).json({ error: 'User not found' });

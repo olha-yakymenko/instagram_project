@@ -38,9 +38,10 @@ const User = sequelize.define('User', {
         defaultValue: 'user',
     },
     profile_picture: {
-        type: DataTypes.BLOB('long'), // Przechowuje dane binarne obrazu
+        type: DataTypes.BLOB('long'), 
         allowNull: true,
     },
+    
 });
 
 module.exports = User;

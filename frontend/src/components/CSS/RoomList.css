@@ -35,7 +35,7 @@ h2 {
     background-color: #f2f2f2;
     color: #333;
     margin-right: 10px;
-    width: 300px
+    width: 300px;
 }
 
 .search-bar button {
@@ -43,11 +43,11 @@ h2 {
     color: #fff;
     border: none;
     border-radius: 50px;
-    padding:  20px;
+    padding: 20px;
     cursor: pointer;
     font-weight: bold;
     font-size: 1rem;
-    width: 70px
+    width: 70px;
 }
 
 .search-bar button:disabled {
@@ -56,7 +56,6 @@ h2 {
 
 .search-results {
     margin-top: 20px;
-
 }
 
 .search-results ul {
@@ -74,7 +73,6 @@ h2 {
     margin-bottom: 10px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s;
-    
 }
 
 .search-results li:hover {
@@ -90,7 +88,7 @@ h2 {
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.3s;
-    width: 130px
+    width: 130px;
 }
 
 .search-results button:hover {
@@ -143,4 +141,28 @@ h2 {
     color: #8e8e8e;
     display: block;
     margin-top: 5px;
+}
+
+.room-list .profile-pic {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.room-list .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.room-list .online-status {
+    background-color: #4caf50; 
+}
+
+.room-list .offline-status {
+    background-color: #f44336;
 }

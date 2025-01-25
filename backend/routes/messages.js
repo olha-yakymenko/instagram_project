@@ -159,26 +159,162 @@ router.get('/:roomId', async (req, res) => {
     }
 });
 
+// function socketSetup(io) {
+//     io.on('connection', (socket) => {
+//         console.log('User connected to WebSocket', socket.id);
+//         console.log(socket.handshake)
+//         const token = socket.handshake.auth.token;
+//         console.log('Received token:', token);
+
+//         if (!token) {
+//             console.log('Authentication error: No token');
+//             socket.disconnect(); 
+//             return;
+//         }
+
+//         try {
+//             const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+//             socket.user = decoded; 
+//             console.log('Authenticated user:', socket.user);
+//         } catch (error) {
+//             console.log('Authentication error:', error);
+//             socket.disconnect(); 
+//             return;
+//         }
+
+//         socket.on('joinRoom', async ({ roomId }) => {
+//             if (!roomId) {
+//                 console.log('Error: Missing roomId');
+//                 return;
+//             }
+        
+//             socket.join(roomId);
+//             console.log(`User ${socket.id} joined room ${roomId}`);
+        
+//             try {
+//                 const room = await Room.findOne({
+//                     where: { id: roomId },
+//                     include: [
+//                         { model: User, as: 'User1', attributes: ['id', 'username'] },
+//                         { model: User, as: 'User2', attributes: ['id', 'username'] },
+//                     ],
+//                 });
+        
+//                 if (room) {
+//                     const roomInfo = {
+//                         user1: room.User1?.username || 'Nieznany użytkownik',
+//                         user2: room.User2?.username || 'Nieznany użytkownik',
+//                     };
+//                     socket.emit('roomInfo', roomInfo);
+//                 } else {
+//                     console.log('Room not found for roomId:', roomId);
+//                 }
+        
+//                 const messages = await Message.findAll({
+//                     where: { roomId },
+//                     include: [
+//                         {
+//                             model: User,
+//                             attributes: ['id', 'username'], 
+//                         },
+//                     ],
+//                     order: [['timestamp', 'ASC']], 
+//                 });
+        
+//                 const formattedMessages = messages.map(message => ({
+//                     id: message.id,
+//                     content: message.content,
+//                     timestamp: message.timestamp,
+//                     roomId: message.roomId,
+//                     senderUsername: message.User?.username || 'Nieznany użytkownik',
+//                 }));
+        
+//                 socket.emit('loadMessages', formattedMessages); 
+//             } catch (err) {
+//                 console.error('Error fetching room info or messages:', err);
+//             }
+//         });
+        
+//         socket.on('sendMessage', async (messageData) => {
+//             console.log('Received messageData:', messageData);
+        
+//             if (!messageData.roomId || !messageData.content) {
+//                 console.log('Error: Missing roomId or content');
+//                 return;
+//             }
+        
+//             try {
+//                 const sender = await User.findOne({
+//                     where: { id: socket.user.id },
+//                     attributes: ['id', 'username'],
+//                 });
+        
+//                 if (!sender) {
+//                     console.log('Error: Sender not found');
+//                     return;
+//                 }
+        
+//                 const message = await Message.create({
+//                     roomId: messageData.roomId,
+//                     content: messageData.content,
+//                     userId: sender.id,
+//                     timestamp: new Date(),
+//                 });
+        
+//                 console.log('Message created:', message);
+        
+//                 const newMessage = {
+//                     id: message.id,
+//                     content: message.content,
+//                     timestamp: message.timestamp,
+//                     roomId: message.roomId,
+//                     senderUsername: sender.username, 
+//                 };
+        
+//                 io.to(messageData.roomId).emit('newMessage', newMessage);
+//             } catch (err) {
+//                 console.error('Error sending message via WebSocket:', err);
+//             }
+//         });
+        
+//         socket.on('disconnect', () => {
+//             console.log('User disconnected from WebSocket', socket.id);
+//         });
+//     });
+// }
+
+let onlineUsers = {};  
+
 function socketSetup(io) {
     io.on('connection', (socket) => {
         console.log('User connected to WebSocket', socket.id);
-        console.log(socket.handshake)
+        console.log(socket.handshake);
         const token = socket.handshake.auth.token;
         console.log('Received token:', token);
 
         if (!token) {
             console.log('Authentication error: No token');
-            socket.disconnect(); 
+            socket.disconnect();
             return;
         }
 
         try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-            socket.user = decoded; 
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            socket.user = decoded;
             console.log('Authenticated user:', socket.user);
+            console.log("USERAUTH", socket.user.id)
+            onlineUsers[socket.user.id] = socket.user.username;
+            console.log('Current online users:', onlineUsers);
+            console.log(Object.keys(onlineUsers).map(userId => ({
+                userId,
+                username: socket.user.username 
+              })))
+
+        io.emit('userOnline', onlineUsers)
+
         } catch (error) {
             console.log('Authentication error:', error);
-            socket.disconnect(); 
+            socket.disconnect();
             return;
         }
 
@@ -234,7 +370,7 @@ function socketSetup(io) {
                 console.error('Error fetching room info or messages:', err);
             }
         });
-        
+
         socket.on('sendMessage', async (messageData) => {
             console.log('Received messageData:', messageData);
         
@@ -276,9 +412,18 @@ function socketSetup(io) {
                 console.error('Error sending message via WebSocket:', err);
             }
         });
-        
+
         socket.on('disconnect', () => {
             console.log('User disconnected from WebSocket', socket.id);
+
+            // Usuń użytkownika z listy online
+            if (socket.user && onlineUsers[socket.user.id]) {
+                delete onlineUsers[socket.user.id];
+                console.log('Current online users:', onlineUsers);
+
+                // Emituj zdarzenie, że użytkownik jest offline
+                io.emit('userOffline', { userId: socket.user.id });
+            }
         });
     });
 }

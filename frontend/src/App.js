@@ -15,6 +15,7 @@ import Chat from './components/Chat';
 import RoomList from './components/RoomList'; 
 import { MqttProvider } from './components/MqttContext';
 import NotificationList from './components/NotificationList';
+import { SocketProvider } from './components/SocketContext';
 const App = () => {
   return (
     <Router>
@@ -23,6 +24,8 @@ const App = () => {
         <MqttProvider>
           <NotificationList/>
             <Navbar />
+            <SocketProvider>
+
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
@@ -42,10 +45,10 @@ const App = () => {
               <Route path="/chat" element={<RoomList />} /> {/* Lista pokoi */}
 
               <Route path="/chat/:roomId" element={<Chat />} /> {/* Pokój czatu */}
-
+              
               <Route path="/search" element={<Search />} />
             </Routes>
-          
+          </SocketProvider>
         </MqttProvider>
         </NotificationProvider>
       </AuthProvider>

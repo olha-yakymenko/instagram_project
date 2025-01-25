@@ -28,14 +28,14 @@ const server = https.createServer(credentials, app);
 
 const io = socketIo(server, {
   cors: {
-    origin: ['https://localhost', 'http://localhost:3001'],
+    origin: ['https://localhost', 'http://localhost:3001', 'http://localhost:3000'],
     methods: ['GET', 'POST'],
     credentials: true,
   },
 });
 
 
-const allowedOrigins = ['https://localhost', 'http://localhost:3001']; 
+const allowedOrigins = ['https://localhost', 'http://localhost:3001','http://localhost:3000']; 
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -49,8 +49,6 @@ app.use(
     credentials: true,
   })
 );
-
-
 
 
 app.use(express.json());
