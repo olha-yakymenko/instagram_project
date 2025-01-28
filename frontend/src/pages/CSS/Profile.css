@@ -195,6 +195,16 @@
     background-color: #0056b3; 
   }
   
+  .save-name{
+    height: 100px;
+    width: 40px;
+    background-color: inherit;
+    color:black;
+  }
+  
+  .input-name{
+    margin-left: 10px;
+  }
   
   @media (max-width: 768px) {
     .profile-header {

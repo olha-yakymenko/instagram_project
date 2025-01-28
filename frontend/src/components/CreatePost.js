@@ -55,7 +55,7 @@ const CreatePost = () => {
   return (
     <div>
       <h2>Create a New Post</h2>
-      <form onSubmit={handleSubmit}>
+      <form className="create_form" onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Description"

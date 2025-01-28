@@ -1,0 +1,53 @@
+.ad-container {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 800px;
+    transition: transform 0.2s ease-in-out;
+    height: 500px;
+    width: 500px;
+  }
+  
+  .ad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .ad img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+  }
+  
+  .ad h2 {
+    font-family: 'Poppins', 'Arial', sans-serif;
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+  }
+  
+  .ad p {
+    font-family: 'Poppins', 'Arial', sans-serif;
+    font-size: 16px;
+    color: #555;
+    text-align: center;
+    margin: 0;
+  }
+  
+  .ad-container:hover {
+    transform: scale(1.05);
+  }
+  
+  .ad img:hover {
+    transform: scale(1.05);
+  }
+  
+  img{
+    height:450px;
+    width: 500px
+}

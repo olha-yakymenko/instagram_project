@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import './CSS/Notification.css'
 
 const Notifications = () => {
-  const { notifications: contextNotifications, removeNotification } = useNotifications();
+  const { notifications: contextNotifications } = useNotifications();
   const [dbNotifications, setDbNotifications] = useState([]); 
   const { user } = useAuth();
   if (user.id=='underfined'){
@@ -39,9 +39,9 @@ const Notifications = () => {
             }}
           >
             <p>{notification.content}</p>
-            {!notification.isMqtt && (
+            {/* {!notification.isMqtt && (
               <button onClick={() => removeNotification(notification.id)}>Remove</button>
-            )}
+            )} */}
           </div>
         ))
       ) : (

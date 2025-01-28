@@ -1,6 +1,6 @@
 .room-list-container {
     margin: 0 auto;
-    max-width: 500px;
+    max-width: 1200px;
     padding: 20px;
     font-family: 'Arial', sans-serif;
     background-color: #fafafa;
@@ -23,6 +23,8 @@ h2 {
     border-radius: 50px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    width: 680px;
+    margin-left: 250px;
 }
 
 .search-bar input {
@@ -35,7 +37,9 @@ h2 {
     background-color: #f2f2f2;
     color: #333;
     margin-right: 10px;
-    width: 300px;
+    width: 700px;
+    height: 30px;
+    margin-top: 20px;
 }
 
 .search-bar button {
@@ -97,6 +101,8 @@ h2 {
 
 .room-list {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 .room-list ul {

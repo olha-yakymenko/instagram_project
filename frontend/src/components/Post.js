@@ -82,6 +82,10 @@ const Post = ({ post }) => {
   };
 
   const handleLike = async () => {
+    if (!user || !user.id) {
+      console.log("Nie jesteś zalogowany.");
+      return; 
+    }
     console.log("userId", user.id)
     try {
       if (userHasLiked) {
@@ -142,7 +146,6 @@ const Post = ({ post }) => {
   if (!post.id) {
     return <p>Loading...</p>;
   }
-  // console.log("POST", post)
 
   const handleImageError = () => {
     setImageError(true);

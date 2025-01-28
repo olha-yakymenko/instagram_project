@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Post from '../components/Post';
 import axios from '../services/api';
 import mqtt from 'mqtt';
+import './CSS/Home.css'
+
 
 const Home = () => {
     const [posts, setPosts] = useState([]);

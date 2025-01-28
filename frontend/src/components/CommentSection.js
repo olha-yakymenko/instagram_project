@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import {useAuth} from './AuthContext'
+import './CSS/CommentSection.css'
+
 const CommentSection = ({ postId, comments, currentUser, mqttClient }) => {
   const [newComment, setNewComment] = useState('');
   const [localComments, setLocalComments] = useState(comments);
@@ -14,6 +16,10 @@ const CommentSection = ({ postId, comments, currentUser, mqttClient }) => {
   };
 
   const handleAddComment = async () => {
+    if (!user || !user.id) {
+      console.log("Nie jesteś zalogowany.");
+      return; 
+    }
     if (newComment.trim() === '') return; 
     if (!user) return 
     try {

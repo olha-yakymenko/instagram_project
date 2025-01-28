@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaHome, FaSearch, FaRegPlusSquare, FaRegHeart, FaUserCircle } from 'react-icons/fa';
+import { FaHome, FaSearch, FaRegPlusSquare, FaRegHeart, FaUserCircle, FaComment  } from 'react-icons/fa';
 import { useAuth } from './AuthContext';  
 import './CSS/Navbar.css';
 
@@ -43,7 +43,12 @@ const Navbar = () => {
                 Profile
               </Link>
             </li>
-            
+            <li className="navbar-item">
+              <Link to="/chat" className="navbar-link">
+                <FaComment className="navbar-icon" /> 
+                Chat
+              </Link>
+            </li>
             <li className="navbar-item">
               <button
                 className="navbar-link"
@@ -52,12 +57,8 @@ const Navbar = () => {
                 Logout
               </button>
             </li>
-            <li className="navbar-item">
-            <Link to="/chat" className="caht-link">
-              Chat
-            </Link>
-          </li>
           </>
+          
         ) : (
           <li className="navbar-item">
             <Link to="/login" className="navbar-link">

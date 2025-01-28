@@ -11,6 +11,26 @@ router.use(cookieParser());
 const fs = require('fs');
 const path = require('path');
 
+const authenticate = (req, res, next) => {
+  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+
+  console.log('Received token:', token); 
+
+  if (!token) {
+      return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w nagłówkach' });
+  }
+
+  try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      console.log('Decoded token:', decoded); 
+      req.user = decoded; 
+      next();
+  } catch (error) {
+      console.error('Błąd weryfikacji tokenu:', error);
+      return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
+  }
+};
+
 function loadDefaultProfilePicture() {
     const defaultImagePath = path.join(__dirname, '..', 'uploads', 'default_photo.jpg');
     if (!fs.existsSync(defaultImagePath)) {
@@ -112,7 +132,7 @@ router.get('/user/:username', (req, res) => {
             }
             res.json(user);
         } catch (error) {
-            console.error('Server error:', error); // Zalogowanie błędów serwera
+            console.error('Server error:', error);
             res.status(500).json({ error: 'Server error' });
         }
     });
@@ -209,4 +229,36 @@ router.get('/user/:username/picture', async (req, res) => {
     }
 });
 
+router.put('/update-username', authenticate, async (req, res) => {
+    const { username } = req.body;
+  
+    try {
+      const user = await User.findOne({ where: { id: req.user.id } });
+  
+      if (!user) {
+        return res.status(400).json({ success: false, message: 'Nie znaleziono użytkownika' });
+      }
+  
+      const existingUser = await User.findOne({ where: { username } });
+  
+      if (existingUser) {
+        return res.status(400).json({ success: false, message: 'To imię jest już zajęte' });
+      }
+  
+      const oldUsername = user.username; 
+      user.username = username; 
+  
+      await user.save();
+  
+      return res.json({ 
+        success: true, 
+        message: `Imię użytkownika zostało zmienione z ${oldUsername} na ${username}` 
+      });
+  
+    } catch (error) {
+      console.error('Błąd podczas aktualizacji:', error);
+      return res.status(500).json({ success: false, message: 'Wystąpił błąd podczas aktualizacji.' });
+    }
+  });
+  
 module.exports = router;

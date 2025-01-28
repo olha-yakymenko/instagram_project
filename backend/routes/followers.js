@@ -211,7 +211,7 @@ router.get('/:userId/following', async (req, res) => {
     try {
       const followers = await Follower.findAll({
         where: { followingId: userId },
-        include: { model: User, as: 'follower', attributes: ['id', 'name'] }, // Zamiana 'username' na 'name'
+        include: { model: User, as: 'follower', attributes: ['id', 'name'] },
       });
   
       return res.status(200).json(followers.map(f => f.follower));
@@ -227,7 +227,7 @@ router.get('/:userId/following', async (req, res) => {
     try {
       const following = await Follower.findAll({
         where: { followerId: userId },
-        include: { model: User, as: 'following', attributes: ['id', 'name'] }, // Zamiana 'username' na 'name'
+        include: { model: User, as: 'following', attributes: ['id', 'name'] },
       });
   
       return res.status(200).json(following.map(f => f.following));
@@ -281,7 +281,6 @@ router.get('/subscriptions/:userId/:name', async (req, res) => {
       res.status(500).json({ error: 'Błąd serwera' });
     }
   });
-  
   
 
 module.exports = router;

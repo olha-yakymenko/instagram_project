@@ -26,14 +26,8 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
-  const removeNotification = (id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((n) => n.id !== id)
-    );
-  };
-
   return (
-    <NotificationContext.Provider value={{ notifications, addNotification, removeNotification }}>
+    <NotificationContext.Provider value={{ notifications, addNotification }}>
       {children}
     </NotificationContext.Provider>
   );

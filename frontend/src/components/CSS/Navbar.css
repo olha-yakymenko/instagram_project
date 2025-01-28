@@ -14,7 +14,9 @@
   }
   
   .navbar-item {
-    margin: 0 15px;
+    margin: 0 10px;
+    margin-top:10px;
+    margin-right: 50px;
   }
   
   .navbar-link {
@@ -22,7 +24,7 @@
     color: #262626;
     display: flex;
     align-items: center;
-    font-size: 14px;
+    font-size: 18px;
     font-weight: 500;
   }
   
