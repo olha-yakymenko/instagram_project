@@ -39,60 +39,6 @@ const authenticate = (req, res, next) => {
     }
 };
 
-
-// const authenticate = (req, res, next) => {
-//     const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
-  
-//     if (!token) {
-//       return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w nagłówkach' });
-//     }
-  
-//     try {
-//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//       req.user = decoded;
-//       next();
-//     } catch (error) {
-//       console.error('Błąd weryfikacji tokenu:', error);
-//       return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
-//     }
-//   };
-
-// const authenticate = (req, res, next) => {
-//     const token = req.headers.authorization?.split(' ')[1];
-//     if (!token) {
-//         return res.status(401).json({ error: 'No token provided' });
-//     }
-
-//     jwt.verify(token,process.env.JWT_SECRET, (err, decoded) => {
-//         if (err) {
-//             return res.status(401).json({ error: 'Invalid token' });
-//         }
-//         req.user = decoded; // Make sure req.user is being set
-//         next();
-//     });
-// };
-
-  
-// const authenticate = (req, res, next) => {
-
-//     const token = req.cookies[`auth_token_${req.cookies.username}`];  // Odczytujemy token z ciasteczka, zakładając że username jest zapisane w ciasteczkach
-  
-//     if (!token) {
-//       return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w ciasteczkach' });
-//     }
-  
-//     try {
-//       // Weryfikacja tokenu
-//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-//       req.user = decoded;  // Dodajemy dane użytkownika do req.user
-//       next();  // Przechodzimy do kolejnego middleware lub kontrolera
-//     } catch (error) {
-//       console.error('Błąd weryfikacji tokenu:', error);
-//       return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
-//     }
-//   };
-  
-
   const uploadDir = path.join(__dirname, '..', 'uploads');
   if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir); 
@@ -463,6 +409,90 @@ router.post('/:postId/comments', authenticate, async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
+router.put('/:postId/comments/:commentId', authenticate, async (req, res) => {
+    const { postId, commentId } = req.params;
+    const { content } = req.body;
+
+    try {
+        const post = await Post.findByPk(postId);
+
+        if (!post) {
+            return res.status(404).json({ error: 'Post not found' });
+        }
+
+        const comment = await Comment.findByPk(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        if (comment.authorId !== req.user.id) {
+            return res.status(403).json({ error: 'You are not authorized to edit this comment' });
+        }
+
+        comment.content = content;
+        await comment.save();
+
+        const notificationPayloadForPostAuthor = {
+            userId: post.authorId, 
+            relatedUserId: req.user.id, 
+            postId: post.id,
+            type: 'comment_edit',
+            content: `${req.user.username} edytował komentarz: "${comment.content}"`,
+        };
+
+        mqttClient.publish(
+            `user/${post.authorId}/notifications`,  
+            JSON.stringify({
+                postId: postId,
+                type: 'comment_edit',
+                contentText: `Twój post otrzymał edytowany komentarz: "${comment.content}"`,
+            }),
+            (err) => {
+                if (err) {
+                    console.error('MQTT publish error for comment edit notification to post author:', err);
+                } else {
+                    console.log('Published comment edit notification to post author successfully');
+                }
+            }
+        );
+
+        await Notification.create(notificationPayloadForPostAuthor);
+
+        const notificationPayloadForCommenter = {
+            userId: req.user.id, 
+            relatedUserId: post.authorId, 
+            postId: post.id,
+            type: 'comment_edit',
+            content: `Edytowałeś komentarz: "${comment.content}"`,
+        };
+
+        mqttClient.publish(
+            `user/${req.user.id}/notifications`,  
+            JSON.stringify({
+                postId: postId,
+                type: 'comment_edit',
+                contentText: `Edytowałeś komentarz: "${comment.content}"`,
+            }),
+            (err) => {
+                if (err) {
+                    console.error('MQTT publish error for comment edit notification to user:', err);
+                } else {
+                    console.log('Published comment edit notification to user successfully', req.user.id);
+                }
+            }
+        );
+
+        await Notification.create(notificationPayloadForCommenter);
+
+        res.status(200).json(comment);
+    } catch (error) {
+        console.error('Error in /:postId/comments/:commentId:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 
 router.delete('/:postId/likes', authenticate, async (req, res) => {
     const { postId } = req.params;

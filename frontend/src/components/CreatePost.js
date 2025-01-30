@@ -55,7 +55,7 @@ const CreatePost = () => {
   return (
     <div>
       <h2>Create a New Post</h2>
-      <form className="create_form" onSubmit={handleSubmit}>
+      <form className="create-form" onSubmit={handleSubmit}>
         <input
           type="text"
           placeholder="Description"
@@ -66,7 +66,7 @@ const CreatePost = () => {
           type="file"
           onChange={handleImageChange}  
         />
-        <button type="submit">Create Post</button>
+        <button className="create-post" >Create Post</button>
       </form>
     </div>
   );

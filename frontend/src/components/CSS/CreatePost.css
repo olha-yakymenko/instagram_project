@@ -82,3 +82,12 @@ button:disabled:hover {
   transform: none;
 }
 
+.create-post{
+  background-color: #dd5efa;
+}
+
+input{
+  width: 200px;
+  height: 40px;
+  border-radius: 10px;
+}

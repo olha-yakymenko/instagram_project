@@ -39,9 +39,6 @@ const Notifications = () => {
             }}
           >
             <p>{notification.content}</p>
-            {/* {!notification.isMqtt && (
-              <button onClick={() => removeNotification(notification.id)}>Remove</button>
-            )} */}
           </div>
         ))
       ) : (
