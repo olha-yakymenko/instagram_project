@@ -17,8 +17,8 @@ export const AuthProvider = ({ children }) => {
     const [error, setError] = useState(''); 
 
     const checkUser = (token, username) => {
+        console.log("WYS", username)
         return axios.get(`/auth/user/${username}`, {
-            headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
         });
     };

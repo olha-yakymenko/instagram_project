@@ -4,7 +4,7 @@
     border-radius: 8px;
     max-width: 600px;
     margin: 20px auto;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   }
   
   .search h2 {
@@ -83,3 +83,11 @@
     color: #0056b3;
   }
   
+  .posts .username:hover{
+    background-color: aliceblue;
+    margin-left:50px;
+  }
+
+  .posts .username{
+    margin-left:50px;
+  }

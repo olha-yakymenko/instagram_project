@@ -5,7 +5,7 @@ import { useAuth } from './AuthContext';
 import { useMqtt } from './MqttContext';
 import './CSS/Post.css';
 
-const Post = ({ post }) => {
+const Post = ({ post, onUpdate, onDelete }) => {
   const { mqttClient } = useMqtt();
   const { user } = useAuth();
   const [likes, setLikes] = useState(0);
@@ -109,6 +109,7 @@ const Post = ({ post }) => {
       const response = await api.put(`/posts/${post.id}`, { description: newDescription });
       setNewDescription(response.data.description); 
       setIsEditing(false); 
+      if (typeof onUpdate === 'function') onUpdate(post.id); 
     } catch (error) {
       console.error('Error editing post:', error);
       setNewDescription(post.description); 
@@ -123,6 +124,7 @@ const Post = ({ post }) => {
       await api.delete(`/posts/${postId}`);
       console.log("im", post.image)
       console.log("Post deleted successfully");
+      if (typeof onDelete === 'function') onDelete(post.id); 
     } catch (error) {
       console.error('Error deleting post:', error);
     }

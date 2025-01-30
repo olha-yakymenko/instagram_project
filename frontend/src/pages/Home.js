@@ -92,7 +92,15 @@ const Home = () => {
     }, []); 
 
     const mixedContent = mixAdsWithPosts(posts, currentAd);
-
+    const handlePostUpdate = (updatedPost) => {
+        setPosts(posts.map(post => post.id === updatedPost.id ? updatedPost : post));
+        console.log(posts)
+      };
+    
+      const handlePostDelete = (postId) => {
+        setPosts(posts.filter(post => post.id !== postId));
+      };
+    
     return (
         <div>
             {mixedContent.map((item, index) => {
@@ -108,7 +116,7 @@ const Home = () => {
                         </div>
                     );
                 }
-                return <Post key={item.id} post={item} />;
+                return <Post key={item.id} post={item} onUpdate={handlePostUpdate} onDelete={handlePostDelete}/>;
             })}
         </div>
     );

@@ -30,19 +30,21 @@ const RoomList = () => {
           usersMap[room.id] = chatUser;
 
           try {
-            const profilePicRes = await api.get(`/auth/user/${chatUser}/picture`, { responseType: 'blob' });
+            const profilePicRes = await api.get(`/auth/user/${chatUser}/picture`, { responseType: 'blob',
+              validateStatus: (status) => status === 200 || status === 404 });
             const imgUrl = URL.createObjectURL(profilePicRes.data);
+            console.log(chatUser, imgUrl)
             setProfilePictures((prev) => ({
-              ...prev,
-              [chatUser]: imgUrl,
+                ...prev,
+                [chatUser]: imgUrl,
             }));
-          } catch (picError) {
-            console.error("Error loading profile picture:", picError);
+        } catch (error){
             setProfilePictures((prev) => ({
-              ...prev,
-              [chatUser]: 'https://localhost:5007/uploads/default_photo.jpg',
+                ...prev,
+                [chatUser]: 'https://localhost:5007/uploads/default_photo.jpg',
             }));
-          }
+        }
+        
         });
 
         await Promise.all(promises);

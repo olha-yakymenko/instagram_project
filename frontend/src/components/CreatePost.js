@@ -20,16 +20,16 @@ const CreatePost = () => {
     e.preventDefault();
 
     if (!user) {
-      alert('You must be logged in to create a post');
+      console.log('You must be logged in to create a post');
       return;
     }
 
     try {
-      const token = Cookies.get('token'); 
-      if (!token) {
-        alert('You are not authenticated');
-        return;
-      }
+      // const token = Cookies.get('token'); 
+      // if (!token) {
+      //   console.log('You are not authenticated');
+      //   return;
+      // }
 
       const formData = new FormData();
       formData.append('description', description);
@@ -41,8 +41,9 @@ const CreatePost = () => {
         {
           headers: {
             'Content-Type': 'multipart/form-data', 
-            Authorization: `Bearer ${token}`, 
+
           },
+          withCredentials: true
         }
       );
 

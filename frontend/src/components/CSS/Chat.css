@@ -1,9 +1,9 @@
 .chat-container {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    max-width: 600px;
+    height: 90vh;
     margin: auto;
+    width: auto;
     background-color: #fafafa;
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -76,7 +76,9 @@
     color: white;
     align-self: flex-end;
   }
-  
+  .message.outgoing .message-timestamp {
+    align-self: flex-end; 
+  }
   .chat-input {
     padding: 10px;
     background-color: #ffffff;

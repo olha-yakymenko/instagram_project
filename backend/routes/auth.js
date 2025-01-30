@@ -12,24 +12,26 @@ const fs = require('fs');
 const path = require('path');
 
 const authenticate = (req, res, next) => {
-  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+  const token = req.cookies[`auth_token_${req.params.username}`];  
 
-  console.log('Received token:', token); 
+  console.log('Received token:', token);
 
   if (!token) {
-      return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w nagłówkach' });
+      return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w ciasteczkach' });
   }
 
   try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);  
+
       console.log('Decoded token:', decoded); 
-      req.user = decoded; 
-      next();
+      req.user = decoded;  
+      next();  
   } catch (error) {
       console.error('Błąd weryfikacji tokenu:', error);
       return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
   }
 };
+
 
 function loadDefaultProfilePicture() {
     const defaultImagePath = path.join(__dirname, '..', 'uploads', 'default_photo.jpg');
@@ -91,10 +93,12 @@ router.post('/login', async (req, res) => {
 
         res.cookie(`auth_token_${user.username}`, token, {
             httpOnly: true,  
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production' ? true : false,
             maxAge: 6 * 60 * 60 * 1000, 
             sameSite: 'None',
         });
+        console.log("USTAW", token)
+        console.log('Ciasteczka:', req.cookies);
 
         res.json({ message: 'Login successful', username: user.username, token });
     } catch (error) {
@@ -104,38 +108,42 @@ router.post('/login', async (req, res) => {
 });
 
 
-
-router.get('/user/:username', (req, res) => {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(403).json({ error: 'Access denied, token missing or malformed' });
+router.get('/user/:username', async (req, res) => {
+    const token = req.cookies[`auth_token_${req.params.username}`]; 
+    console.log(token)
+    if (!token) {
+        return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w ciasteczkach' });
     }
 
-    const token = authHeader.split(' ')[1];
-
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ error: 'Invalid or expired token' });
-        }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
         const { username } = req.params;
 
-        try {
-            const user = await User.findOne({ where: { username } });
-            if (!user) {
-                return res.status(404).json({ error: 'User not found' });
-            }
-
-            if (decoded.username !== username) {
-                return res.status(403).json({ error: 'Access denied' });
-            }
-            res.json(user);
-        } catch (error) {
-            console.error('Server error:', error);
-            res.status(500).json({ error: 'Server error' });
+        if (decoded.username !== username) {
+            return res.status(403).json({ error: 'Access denied, username mismatch' });
         }
-    });
+
+        const user = await User.findOne({ where: { username } });
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        res.json(user);
+    } catch (error) {
+        console.error('Token verification error:', error);
+
+        if (error instanceof jwt.TokenExpiredError) {
+            return res.status(401).json({ error: 'Token expired' });
+        }
+
+        if (error instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+
+        return res.status(500).json({ error: 'Server error' });
+    }
 });
 
 
@@ -219,6 +227,9 @@ router.get('/user/:username/picture', async (req, res) => {
 
         if (!user.profile_picture) {
             return res.status(404).json({ error: 'Profile picture not found' });
+            // const defaultImagePath = path.join(__dirname, '../uploads/default_photo.jpg');
+            // imageBuffer = fs.readFileSync(defaultImagePath); 
+            // contentType = 'image/jpeg'; 
         }
 
         res.setHeader('Content-Type', 'image/jpeg'); 

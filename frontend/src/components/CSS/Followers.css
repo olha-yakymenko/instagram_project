@@ -1,0 +1,10 @@
+.modal button {
+    background-color: rgb(48, 141, 253);
+    height: 40px;
+    width: 80px;
+}
+.unsubscribe-btn{
+    background-color: inherit;
+    color: black;
+
+}

@@ -1,64 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-// import api from '../services/api';
-// import {useAuth} from './AuthContext'
-// import './CSS/CommentSection.css'
-
-// const CommentSection = ({ postId, comments, currentUser, mqttClient }) => {
-//   const [newComment, setNewComment] = useState('');
-//   const [localComments, setLocalComments] = useState(comments);
-//   const { user } = useAuth();
-//   useEffect(() => {
-//     setLocalComments(comments); 
-//   }, [comments]);
-
-//   const handleCommentChange = (e) => {
-//     setNewComment(e.target.value);
-//   };
-
-//   const handleAddComment = async () => {
-//     if (!user || !user.id) {
-//       console.log("Nie jesteś zalogowany.");
-//       return; 
-//     }
-//     if (newComment.trim() === '') return; 
-//     if (!user) return 
-//     try {
-//       const { data } = await api.post(`/posts/${postId}/comments`, { content: newComment });
-//       console.log("K", data)
-//       setLocalComments((prevComments) => [...prevComments, data]);
-//       setNewComment('');
-//     } catch (error) {
-//       console.error('Error adding comment:', error);
-//     }
-//   };
-
-//   return (
-//     <div className="comment-section">
-//       <div className="comments-list">
-//   {localComments.map((comment, index) => (
-//     <div key={comment?.id || index} className="comment">
-//       <p>{comment?.User?.username ? `${comment.User.username} ` : ''}: {comment?.content || ' '}</p> 
-//     </div>
-//   ))}
-// </div>
-
-
-//       <div className="comment-input">
-//         <textarea
-//           value={newComment}
-//           onChange={handleCommentChange}
-//           placeholder="Add a comment..."
-//         ></textarea>
-//         <button onClick={handleAddComment}>Post Comment</button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CommentSection;
-
-
-
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
@@ -67,7 +6,7 @@ import './CSS/CommentSection.css';
 const CommentSection = ({ postId, comments, currentUser, mqttClient }) => {
   const [newComment, setNewComment] = useState('');
   const [localComments, setLocalComments] = useState(comments);
-  const [editingCommentId, setEditingCommentId] = useState(null); // ID edytowanego komentarza
+  const [editingCommentId, setEditingCommentId] = useState(null); 
   const [editedCommentContent, setEditedCommentContent] = useState('');
   const { user } = useAuth();
 

@@ -15,10 +15,7 @@ api.interceptors.request.use((config) => {
         const token = Cookies.get(`auth_token_${username}`); 
 
         console.log("TOKEN", token); 
-
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
+        config.headers['X-Username'] = username;
     }
 
     return config;

@@ -16,23 +16,35 @@ client.on('error', (err) => {
 });
 
 const authenticate = (req, res, next) => {
-  const token = req.headers['authorization'] && req.headers['authorization'].split(' ')[1];
+    const username = req.headers['x-username'];
 
-  console.log('Received token:', token); 
+    console.log('Received username:', username);
 
-  if (!token) {
-      return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w nagłówkach' });
-  }
+    if (!username) {
+        return res.status(400).json({ error: 'Username is required' });
+    }
 
-  try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      console.log('Decoded token:', decoded); 
-      req.user = decoded; 
-      next();
-  } catch (error) {
-      console.error('Błąd weryfikacji tokenu:', error);
-      return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
-  }
+    const token = req.cookies[`auth_token_${username}`];
+
+    console.log('Received token from cookies:', token);
+
+    if (!token) {
+        return res.status(401).json({ error: 'Brak tokenu autoryzacyjnego w ciasteczkach' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        console.log('Decoded token:', decoded);
+
+        req.user = decoded;
+
+        next();
+
+    } catch (error) {
+        console.error('Błąd weryfikacji tokenu:', error);
+        return res.status(401).json({ error: 'Niepoprawny lub wygasły token' });
+    }
 };
 
 

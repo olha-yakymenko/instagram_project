@@ -122,10 +122,10 @@
   
   .modal button {
     display: block;
-    margin: 10px auto 0;
-    padding: 8px 16px;
-    background: #0095f6;
-    color: white;
+    /* margin: 10px auto 0;
+    padding: 8px 16px; */
+    background: inherit;
+    color: black;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -133,7 +133,7 @@
   }
   
   .modal button:hover {
-    background: #007ac1;
+    background: #c0e5fb;
   }
   
   .error {
@@ -205,7 +205,20 @@
   .input-name{
     margin-left: 10px;
   }
+
+  .followers-container h2{
+    font-size: 1rem;
+  }
+
+  .followers-list li{
+    display: flex;
+  }
   
+  .user-info span{
+    font-size: 20px;
+    font-weight: 200;
+  }
+
   @media (max-width: 768px) {
     .profile-header {
       flex-direction: column;

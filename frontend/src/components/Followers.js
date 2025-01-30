@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { useAuth } from './AuthContext';
+import './CSS/Followers.css'
 
 const Followers = ({ type, userName }) => {
     const { user } = useAuth();
@@ -40,16 +41,18 @@ const Followers = ({ type, userName }) => {
       
   
     if (loading) return <p>Ładowanie danych...</p>;
-  
+
     return (
-      <div>
+      <div className="followers-container">
         <h2>{type === 'followers' ? 'Twoi obserwatorzy' : 'Subskrybowani użytkownicy'}</h2>
-        <ul>
+        <ul className="followers-list">
           {list.map((item) => (
             <li key={item.id}>
-              {item.username}
-              {user.id===userId && type === 'following' && (
-                <button onClick={() => handleUnsubscribe(item.id)}>Usuń subskrypcję</button>
+              <div className="user-info">
+                <span>{item.username}</span>
+              </div>
+              {user.id === userId && type === 'following' && (
+                <button className="unsubscribe-btn" onClick={() => handleUnsubscribe(item.id)}>Usuń</button>
               )}
             </li>
           ))}
